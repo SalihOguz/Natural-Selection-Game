@@ -17,14 +17,21 @@ public class Grid : MonoBehaviour {
         GetComponent<MeshFilter>().mesh = mesh = new Mesh();
 		mesh.name = "Procedural Grid";
 
-		// put vertices
+		// put vertices and UV and normal
 		vertices = new Vector3[(xSize + 1) * (ySize + 1)];
+		Vector2[] uv = new Vector2[vertices.Length];
+		Vector4[] tangents = new Vector4[vertices.Length];
+		Vector4 tangent = new Vector4(0f, 0f, 1f, -1f);
         for (int i = 0, y = 0; y <= ySize; y++) {
 			for (int x = 0; x <= xSize; x++, i++) {
-				vertices[i] = new Vector3(x, y);
+				vertices[i] = new Vector3(x, Mathf.PerlinNoise((float)x/0.3f, (float)y*0.3f) * 2f, y);
+				uv[i] = new Vector2((float)x / xSize, (float)y / ySize);
+				tangents[i] = tangent;
 			}
 		}
         mesh.vertices = vertices;
+		mesh.uv = uv;
+		mesh.tangents = tangents;
 
 		// put triangles
         int[] triangles = new int[xSize * ySize * 6];
@@ -37,16 +44,19 @@ public class Grid : MonoBehaviour {
 			}
 		}
 		mesh.triangles = triangles;
+		mesh.RecalculateNormals();
+
+		
 	}
 
-    private void OnDrawGizmos () {
-        if (vertices == null) {
-			return;
-		}
+    // private void OnDrawGizmos () {
+    //     if (vertices == null) {
+	// 		return;
+	// 	}
 
-		Gizmos.color = Color.black;
-		for (int i = 0; i < vertices.Length; i++) {
-			Gizmos.DrawSphere(vertices[i], 0.1f);
-		}
-	}
+	// 	Gizmos.color = Color.black;
+	// 	for (int i = 0; i < vertices.Length; i++) {
+	// 		Gizmos.DrawSphere(vertices[i], 0.1f);
+	// 	}
+	// }
 }
