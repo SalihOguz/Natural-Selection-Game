@@ -29,20 +29,44 @@ public class MyCube : MonoBehaviour {
 
         mesh.vertices = vertices;
 
-        int[] triangles = new int[6];
-		// for (int ti = 0, vi = 0, y = 0; y < 2; y++, vi++) {
-		// 	for (int x = 0; x < 2; x++, ti += 6, vi++) {
-		// 		triangles[ti] = vi;
-		// 		triangles[ti + 3] = triangles[ti + 2] = vi + 1;
-		// 		triangles[ti + 4] = triangles[ti + 1] = vi + 2 + 1;
-		// 		triangles[ti + 5] = vi + 2 + 2;
-		// 	}
-		// }
 
+        int[] triangles = new int[36];
+
+        // left side
         triangles[0] = 0;
 		triangles[1] = triangles[4] = 1;
 		triangles[2] = triangles[3] = 2;
 		triangles[5] = 3;
+
+        // right side
+        triangles[6] = 7;
+		triangles[8] = triangles[9] = 6;
+		triangles[7] = triangles[10] = 5;
+		triangles[11] = 4;
+
+        // front side
+        triangles[12] = 0;
+		triangles[14] = triangles[15] = 4;
+		triangles[13] = triangles[16] = 2;
+		triangles[17] = 6;
+
+        // top side
+        triangles[18] = 3;
+		triangles[19] = triangles[22] = 7;
+		triangles[20] = triangles[21] = 2;
+		triangles[23] = 6;
+
+        // bottom side
+        triangles[24] = 1;
+		triangles[25] = triangles[28] = 0;
+		triangles[26] = triangles[27] = 5;
+		triangles[29] = 4;
+
+        // back side
+        triangles[30] = 3;
+		triangles[31] = triangles[34] = 1;
+		triangles[32] = triangles[33] = 7;
+		triangles[35] = 5;
 
 		mesh.triangles = triangles;
     }

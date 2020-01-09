@@ -1,103 +1,144 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Cube : MonoBehaviour {
 
-	public int xSize, ySize, zSize;
-
-	private Mesh mesh;
-	private Vector3[] vertices;
-
-	private void Generate () {
-		GetComponent<MeshFilter>().mesh = mesh = new Mesh();
-		mesh.name = "Procedural Cube";
-
-        GenerateVertices();
-        CreateTriangles();
+	void Awake()
+	{
+	Mesh mesh = GetComponent<MeshFilter>().mesh = new Mesh();
+	mesh.Clear();
+	
+	float length = 1f;
+	float width = 1f;
+	float height = 1f;
+	
+	#region Vertices
+	Vector3 p0 = new Vector3( -length * .5f,	-width * .5f, height * .5f );
+	Vector3 p1 = new Vector3( length * .5f, 	-width * .5f, height * .5f );
+	Vector3 p2 = new Vector3( length * .5f, 	-width * .5f, -height * .5f );
+	Vector3 p3 = new Vector3( -length * .5f,	-width * .5f, -height * .5f );	
+	
+	Vector3 p4 = new Vector3( -length * .5f,	width * .5f,  height * .5f );
+	Vector3 p5 = new Vector3( length * .5f, 	width * .5f,  height * .5f );
+	Vector3 p6 = new Vector3( length * .5f, 	width * .5f,  -height * .5f );
+	Vector3 p7 = new Vector3( -length * .5f,	width * .5f,  -height * .5f );
+	
+	Vector3[] vertices = new Vector3[]
+	{
+		// Bottom
+		p0, p1, p2, p3,
+	
+		// Left
+		p7, p4, p0, p3,
+	
+		// Front
+		p4, p5, p1, p0,
+	
+		// Back
+		p6, p7, p3, p2,
+	
+		// Right
+		p5, p6, p2, p1,
+	
+		// Top
+		p7, p6, p5, p4
+	};
+	#endregion
+	
+	#region Normales
+	Vector3 up 	= Vector3.up;
+	Vector3 down 	= Vector3.down;
+	Vector3 front 	= Vector3.forward;
+	Vector3 back 	= Vector3.back;
+	Vector3 left 	= Vector3.left;
+	Vector3 right 	= Vector3.right;
+	
+	Vector3[] normales = new Vector3[]
+	{
+		// Bottom
+		down, down, down, down,
+	
+		// Left
+		left, left, left, left,
+	
+		// Front
+		front, front, front, front,
+	
+		// Back
+		back, back, back, back,
+	
+		// Right
+		right, right, right, right,
+	
+		// Top
+		up, up, up, up
+	};
+	#endregion	
+	
+	#region UVs
+	Vector2 _00 = new Vector2( 0f, 0f );
+	Vector2 _10 = new Vector2( 1f, 0f );
+	Vector2 _01 = new Vector2( 0f, 1f );
+	Vector2 _11 = new Vector2( 1f, 1f );
+	
+	Vector2[] uvs = new Vector2[]
+	{
+		// Bottom
+		_11, _01, _00, _10,
+	
+		// Left
+		_11, _01, _00, _10,
+	
+		// Front
+		_11, _01, _00, _10,
+	
+		// Back
+		_11, _01, _00, _10,
+	
+		// Right
+		_11, _01, _00, _10,
+	
+		// Top
+		_11, _01, _00, _10,
+	};
+	#endregion
+	
+	#region Triangles
+	int[] triangles = new int[]
+	{
+		// Bottom
+		3, 1, 0,
+		3, 2, 1,			
+	
+		// Left
+		3 + 4 * 1, 1 + 4 * 1, 0 + 4 * 1,
+		3 + 4 * 1, 2 + 4 * 1, 1 + 4 * 1,
+	
+		// Front
+		3 + 4 * 2, 1 + 4 * 2, 0 + 4 * 2,
+		3 + 4 * 2, 2 + 4 * 2, 1 + 4 * 2,
+	
+		// Back
+		3 + 4 * 3, 1 + 4 * 3, 0 + 4 * 3,
+		3 + 4 * 3, 2 + 4 * 3, 1 + 4 * 3,
+	
+		// Right
+		3 + 4 * 4, 1 + 4 * 4, 0 + 4 * 4,
+		3 + 4 * 4, 2 + 4 * 4, 1 + 4 * 4,
+	
+		// Top
+		3 + 4 * 5, 1 + 4 * 5, 0 + 4 * 5,
+		3 + 4 * 5, 2 + 4 * 5, 1 + 4 * 5,
+	
+	};
+	#endregion
+	
+	mesh.vertices = vertices;
+	mesh.normals = normales;
+	mesh.uv = uvs;
+	mesh.triangles = triangles;
+	
+	mesh.RecalculateBounds();
+	mesh.Optimize();
 	}
-
-    void GenerateVertices()
-    {
-        int cornerVertices = 8;
-		int edgeVertices = (xSize + ySize + zSize - 3) * 4;
-		int faceVertices = (
-			(xSize - 1) * (ySize - 1) +
-			(xSize - 1) * (zSize - 1) +
-			(ySize - 1) * (zSize - 1)) * 2;
-		vertices = new Vector3[cornerVertices + edgeVertices + faceVertices];
-
-        int v = 0;
-		for (int y = 0; y <= ySize; y++) {
-			for (int x = 0; x <= xSize; x++) {
-				vertices[v++] = new Vector3(x, y, 0);
-			}
-			for (int z = 1; z <= zSize; z++) {
-				vertices[v++] = new Vector3(xSize, y, z);
-			}
-			for (int x = xSize - 1; x >= 0; x--) {
-				vertices[v++] = new Vector3(x, y, zSize);
-			}
-			for (int z = zSize - 1; z > 0; z--) {
-				vertices[v++] = new Vector3(0, y, z);
-			}
-		}
-
-        // Top & Bottom
-        for (int z = 1; z < zSize; z++) {
-			for (int x = 1; x < xSize; x++) {
-				vertices[v++] = new Vector3(x, ySize, z);
-			}
-		}
-		for (int z = 1; z < zSize; z++) {
-			for (int x = 1; x < xSize; x++) {
-				vertices[v++] = new Vector3(x, 0, z);
-			}
-		}
-
-        mesh.vertices = vertices;
-    }
-
-    void CreateTriangles()
-    {
-        int quads = (xSize * ySize + xSize * zSize + ySize * zSize) * 2;
-		int[] triangles = new int[quads * 6];
-		int ring = (xSize + zSize) * 2;
-		int t = 0, v = 0;
-
-		for (int y = 0; y < ySize; y++, v++) {
-			for (int q = 0; q < ring - 1; q++, v++) {
-				t = SetQuad(triangles, t, v, v + 1, v + ring, v + ring + 1);
-			}
-			t = SetQuad(triangles, t, v, v - ring + 1, v + ring, v + 1);
-		}
-
-        t = CreateTopFace(triangles, t, ring);
-		
-		mesh.triangles = triangles;
-    }
-
-    private int CreateTopFace (int[] triangles, int t, int ring) {
-		int v = ring * ySize;
-		for (int x = 0; x < xSize - 1; x++, v++) {
-			t = SetQuad(triangles, t, v, v + 1, v + ring - 1, v + ring);
-		}
-		t = SetQuad(triangles, t, v, v + 1, v + ring - 1, v + 2);
-
-        int vMin = ring * (ySize + 1) - 1;
-		int vMid = vMin + 1;
-
-		t = SetQuad(triangles, t, vMin, vMid, vMin - 1, vMid + xSize - 1);
-		
-		return t;
-	}
-
-    private static int SetQuad (int[] triangles, int i, int v00, int v10, int v01, int v11) 
-    {
-		triangles[i] = v00;
-		triangles[i + 1] = triangles[i + 4] = v01;
-		triangles[i + 2] = triangles[i + 3] = v10;
-		triangles[i + 5] = v11;
-		return i + 6;
-	}
-}
+}	
