@@ -14,60 +14,71 @@ public class MyCube : MonoBehaviour {
         GetComponent<MeshFilter>().mesh = mesh = new Mesh();
 		mesh.name = "Procedural Grid";
 
-        vertices = new Vector3[8];
-        
-        for (int vi = 0, x = 0; x < 2; x++)
-        {
-            for (int y = 0; y < 2; y++)
-            {
-                for (int z = 0; z < 2; z++)
-                {
-                    vertices[vi++] = new Vector3(x, y, z);
-                }
-            }
-        }
+        float size = 1f;
+		Vector3[] vertices = {
+			new Vector3(0, size, 0),
+			new Vector3(0, 0, 0),
+			new Vector3(size, size, 0),
+			new Vector3(size, 0, 0),
+
+			new Vector3(0, 0, size),
+			new Vector3(size, 0, size),
+			new Vector3(0, size, size),
+			new Vector3(size, size, size),
+
+			new Vector3(0, size, 0),
+			new Vector3(size, size, 0),
+
+			new Vector3(0, size, 0),
+			new Vector3(0, size, size),
+
+			new Vector3(size, size, 0),
+			new Vector3(size, size, size),
+		};
+
+		int[] triangles = {
+			0, 2, 1, // front
+			1, 2, 3,
+			4, 5, 6, // back
+			5, 7, 6,
+			6, 7, 8, //top
+			7, 9 ,8, 
+			1, 3, 4, //bottom
+			3, 5, 4,
+			1, 11,10,// left
+			1, 4, 11,
+			3, 12, 5,//right
+			5, 12, 13
+
+
+		};
+
+		Vector2[] uvs = {
+			new Vector2(0, 1f),
+			new Vector2(1f, 1f),
+			new Vector2(0,0),
+			new Vector2(1f, 0),
+
+			new Vector2(0.5f, 0.66f),
+			new Vector2(0.5f, 0.33f),
+			new Vector2(0.75f, 0.66f),
+			new Vector2(0.75f, 0.33f),
+
+			new Vector2(1, 0.66f),
+			new Vector2(1, 0.33f),
+
+			new Vector2(0.25f, 1),
+			new Vector2(0.5f, 1),
+
+			new Vector2(0.25f, 0),
+			new Vector2(0.5f, 0),
+		};	
 
         mesh.vertices = vertices;
-
-
-        int[] triangles = new int[36];
-
-        // left side
-        triangles[0] = 0;
-		triangles[1] = triangles[4] = 1;
-		triangles[2] = triangles[3] = 2;
-		triangles[5] = 3;
-
-        // right side
-        triangles[6] = 7;
-		triangles[8] = triangles[9] = 6;
-		triangles[7] = triangles[10] = 5;
-		triangles[11] = 4;
-
-        // front side
-        triangles[12] = 0;
-		triangles[14] = triangles[15] = 4;
-		triangles[13] = triangles[16] = 2;
-		triangles[17] = 6;
-
-        // top side
-        triangles[18] = 3;
-		triangles[19] = triangles[22] = 7;
-		triangles[20] = triangles[21] = 2;
-		triangles[23] = 6;
-
-        // bottom side
-        triangles[24] = 1;
-		triangles[25] = triangles[28] = 0;
-		triangles[26] = triangles[27] = 5;
-		triangles[29] = 4;
-
-        // back side
-        triangles[30] = 3;
-		triangles[31] = triangles[34] = 1;
-		triangles[32] = triangles[33] = 7;
-		triangles[35] = 5;
-
 		mesh.triangles = triangles;
+        mesh.uv = uvs;
+
+        mesh.Optimize ();
+		mesh.RecalculateNormals ();
     }
 }
