@@ -1,8 +1,10 @@
 class CubeData
 {
-    public bool forwardSide;
+    public bool frontSide;
     public bool backSide;
     public bool leftSide;
     public bool rightSide;
+    public bool topSide;
+    public bool bottomSide;
     public float size = 1;
 }
