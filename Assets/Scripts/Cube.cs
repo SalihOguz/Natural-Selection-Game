@@ -1,144 +1,337 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class Cube : MonoBehaviour {
+public class Cube : MonoBehaviour
+{
+    private Mesh mesh;
 
-	void Awake()
-	{
-	Mesh mesh = GetComponent<MeshFilter>().mesh = new Mesh();
-	mesh.Clear();
-	
-	float length = 1f;
-	float width = 1f;
-	float height = 1f;
-	
-	#region Vertices
-	Vector3 p0 = new Vector3( -length * .5f,	-width * .5f, height * .5f );
-	Vector3 p1 = new Vector3( length * .5f, 	-width * .5f, height * .5f );
-	Vector3 p2 = new Vector3( length * .5f, 	-width * .5f, -height * .5f );
-	Vector3 p3 = new Vector3( -length * .5f,	-width * .5f, -height * .5f );	
-	
-	Vector3 p4 = new Vector3( -length * .5f,	width * .5f,  height * .5f );
-	Vector3 p5 = new Vector3( length * .5f, 	width * .5f,  height * .5f );
-	Vector3 p6 = new Vector3( length * .5f, 	width * .5f,  -height * .5f );
-	Vector3 p7 = new Vector3( -length * .5f,	width * .5f,  -height * .5f );
-	
-	Vector3[] vertices = new Vector3[]
-	{
-		// Bottom
-		p0, p1, p2, p3,
-	
-		// Left
-		p7, p4, p0, p3,
-	
-		// Front
-		p4, p5, p1, p0,
-	
-		// Back
-		p6, p7, p3, p2,
-	
-		// Right
-		p5, p6, p2, p1,
-	
-		// Top
-		p7, p6, p5, p4
-	};
-	#endregion
-	
-	#region Normales
-	Vector3 up 	= Vector3.up;
-	Vector3 down 	= Vector3.down;
-	Vector3 front 	= Vector3.forward;
-	Vector3 back 	= Vector3.back;
-	Vector3 left 	= Vector3.left;
-	Vector3 right 	= Vector3.right;
-	
-	Vector3[] normales = new Vector3[]
-	{
-		// Bottom
-		down, down, down, down,
-	
-		// Left
-		left, left, left, left,
-	
-		// Front
-		front, front, front, front,
-	
-		// Back
-		back, back, back, back,
-	
-		// Right
-		right, right, right, right,
-	
-		// Top
-		up, up, up, up
-	};
-	#endregion	
-	
-	#region UVs
-	Vector2 _00 = new Vector2( 0f, 0f );
-	Vector2 _10 = new Vector2( 1f, 0f );
-	Vector2 _01 = new Vector2( 0f, 1f );
-	Vector2 _11 = new Vector2( 1f, 1f );
-	
-	Vector2[] uvs = new Vector2[]
-	{
-		// Bottom
-		_11, _01, _00, _10,
-	
-		// Left
-		_11, _01, _00, _10,
-	
-		// Front
-		_11, _01, _00, _10,
-	
-		// Back
-		_11, _01, _00, _10,
-	
-		// Right
-		_11, _01, _00, _10,
-	
-		// Top
-		_11, _01, _00, _10,
-	};
-	#endregion
-	
-	#region Triangles
-	int[] triangles = new int[]
-	{
-		// Bottom
-		3, 1, 0,
-		3, 2, 1,			
-	
-		// Left
-		3 + 4 * 1, 1 + 4 * 1, 0 + 4 * 1,
-		3 + 4 * 1, 2 + 4 * 1, 1 + 4 * 1,
-	
-		// Front
-		3 + 4 * 2, 1 + 4 * 2, 0 + 4 * 2,
-		3 + 4 * 2, 2 + 4 * 2, 1 + 4 * 2,
-	
-		// Back
-		3 + 4 * 3, 1 + 4 * 3, 0 + 4 * 3,
-		3 + 4 * 3, 2 + 4 * 3, 1 + 4 * 3,
-	
-		// Right
-		3 + 4 * 4, 1 + 4 * 4, 0 + 4 * 4,
-		3 + 4 * 4, 2 + 4 * 4, 1 + 4 * 4,
-	
-		// Top
-		3 + 4 * 5, 1 + 4 * 5, 0 + 4 * 5,
-		3 + 4 * 5, 2 + 4 * 5, 1 + 4 * 5,
-	
-	};
-	#endregion
-	
-	mesh.vertices = vertices;
-	mesh.normals = normales;
-	mesh.uv = uvs;
-	mesh.triangles = triangles;
-	
-	mesh.RecalculateBounds();
-	mesh.Optimize();
-	}
-}	
+    private void Awake()
+    {
+        // add mesh
+        GetComponent<MeshFilter>().mesh = mesh = new Mesh();
+        mesh.name = "Procedural Grid";
+
+        CubeData cubeData = new CubeData{
+            frontSide = true,
+            backSide = true,
+            leftSide = true,
+            rightSide = true,
+            topSide = true,
+            bottomSide = false,
+            cubeType = CubeType.dirt
+        };
+
+        PutCube(Vector3.zero, cubeData);
+    }
+
+    private void PutCube(Vector3 startPos, CubeData cubeData)
+    {
+        #region Add Vertices
+        int vertexCount = GetVertexCount(cubeData);
+        Vector3[] vertices = new Vector3[vertexCount];
+        float side = cubeData.size / 2f;
+        int currentVertexIndex = 0;
+        int leftStartIndex = 0, rightStartIndex = 0, frontStartIndex = 0, backStartIndex = 0, topStartIndex = 0, bottomStartIndex = 0;
+        
+        if (cubeData.leftSide)
+        {
+            leftStartIndex = currentVertexIndex;
+            vertices[currentVertexIndex] = new Vector3(-side, side, side);
+            vertices[currentVertexIndex + 1] = new Vector3(-side, -side, side);
+            vertices[currentVertexIndex + 2] = new Vector3(-side, side, -side);
+            vertices[currentVertexIndex + 3] = new Vector3(-side, -side, -side);
+            currentVertexIndex += 4;
+        }
+
+        if (cubeData.frontSide)
+        {
+            frontStartIndex = currentVertexIndex;
+            vertices[currentVertexIndex] = new Vector3(-side, side, side);
+            vertices[currentVertexIndex + 1] = new Vector3(side, side, side);
+            vertices[currentVertexIndex + 2] = new Vector3(-side, -side, side);
+            vertices[currentVertexIndex + 3] = new Vector3(side, -side, side);
+            currentVertexIndex += 4;
+        }
+
+        if (cubeData.backSide)
+        {
+            backStartIndex = currentVertexIndex;
+            vertices[currentVertexIndex] = new Vector3(-side, -side, -side);
+            vertices[currentVertexIndex + 1] = new Vector3(side, -side, -side);
+            vertices[currentVertexIndex + 2] = new Vector3(-side, side, -side);
+            vertices[currentVertexIndex + 3] = new Vector3(side, side, -side);
+            currentVertexIndex += 4;
+        }
+
+        if (cubeData.rightSide)
+        {
+            rightStartIndex = currentVertexIndex;
+            vertices[currentVertexIndex] = new Vector3(side, -side, side);
+            vertices[currentVertexIndex + 1] = new Vector3(side, side, side);
+            vertices[currentVertexIndex + 2] = new Vector3(side, -side, -side);
+            vertices[currentVertexIndex + 3] = new Vector3(side, side, -side);
+            currentVertexIndex += 4;
+        }
+
+        if (cubeData.topSide)
+        {
+            topStartIndex = currentVertexIndex;
+            vertices[currentVertexIndex] = new Vector3(side, side, side);
+            vertices[currentVertexIndex + 1] = new Vector3(-side, side, side);
+            vertices[currentVertexIndex + 2] = new Vector3(side, side, -side);
+            vertices[currentVertexIndex + 3] = new Vector3(-side, side, -side);
+            currentVertexIndex += 4;
+        }
+
+        if (cubeData.bottomSide)
+        {
+            bottomStartIndex = currentVertexIndex;
+            vertices[currentVertexIndex] = new Vector3(-side, -side, side);
+            vertices[currentVertexIndex + 1] = new Vector3(side, -side, side);
+            vertices[currentVertexIndex + 2] = new Vector3(-side, -side, -side);
+            vertices[currentVertexIndex + 3] = new Vector3(side, -side, -side);
+            currentVertexIndex += 4;
+        }
+        #endregion
+        
+        #region Add Triangles
+        int triangleCount = GetTriangleCount(cubeData);
+        int[] triangles = new int[triangleCount];
+        currentVertexIndex = 0;
+        if (cubeData.leftSide)
+        {
+            triangles[currentVertexIndex] = leftStartIndex + 2;
+            triangles[currentVertexIndex + 1] = leftStartIndex + 1;
+            triangles[currentVertexIndex + 2] = leftStartIndex;
+
+            triangles[currentVertexIndex + 3] = leftStartIndex + 2;
+            triangles[currentVertexIndex + 4] = leftStartIndex + 3;
+            triangles[currentVertexIndex + 5] = leftStartIndex + 1;
+            currentVertexIndex += 6;
+        }
+
+        if (cubeData.frontSide)
+        {
+            triangles[currentVertexIndex] = frontStartIndex + 2;
+            triangles[currentVertexIndex + 1] = frontStartIndex + 1;
+            triangles[currentVertexIndex + 2] = frontStartIndex;
+
+            triangles[currentVertexIndex + 3] = frontStartIndex + 2;
+            triangles[currentVertexIndex + 4] = frontStartIndex + 3;
+            triangles[currentVertexIndex + 5] = frontStartIndex + 1;
+            currentVertexIndex += 6;
+        }
+
+        if (cubeData.backSide)
+        {
+            triangles[currentVertexIndex] = backStartIndex + 2;
+            triangles[currentVertexIndex + 1] = backStartIndex + 1;
+            triangles[currentVertexIndex + 2] = backStartIndex;
+
+            triangles[currentVertexIndex + 3] = backStartIndex + 2;
+            triangles[currentVertexIndex + 4] = backStartIndex + 3;
+            triangles[currentVertexIndex + 5] = backStartIndex + 1;
+            currentVertexIndex += 6;
+        }
+
+        if (cubeData.rightSide)
+        {
+            triangles[currentVertexIndex] = rightStartIndex + 2;
+            triangles[currentVertexIndex + 1] = rightStartIndex + 1;
+            triangles[currentVertexIndex + 2] = rightStartIndex;
+
+            triangles[currentVertexIndex + 3] = rightStartIndex + 2;
+            triangles[currentVertexIndex + 4] = rightStartIndex + 3;
+            triangles[currentVertexIndex + 5] = rightStartIndex + 1;
+            currentVertexIndex += 6;
+        }
+
+        if (cubeData.topSide)
+        {
+            triangles[currentVertexIndex] = topStartIndex + 2;
+            triangles[currentVertexIndex + 1] = topStartIndex + 1;
+            triangles[currentVertexIndex + 2] = topStartIndex;
+
+            triangles[currentVertexIndex + 3] = topStartIndex + 2;
+            triangles[currentVertexIndex + 4] = topStartIndex + 3;
+            triangles[currentVertexIndex + 5] = topStartIndex + 1;
+            currentVertexIndex += 6;
+        }
+
+        if (cubeData.bottomSide)
+        {
+            triangles[currentVertexIndex] = bottomStartIndex + 2;
+            triangles[currentVertexIndex + 1] = bottomStartIndex + 1;
+            triangles[currentVertexIndex + 2] = bottomStartIndex;
+
+            triangles[currentVertexIndex + 3] = bottomStartIndex + 2;
+            triangles[currentVertexIndex + 4] = bottomStartIndex + 3;
+            triangles[currentVertexIndex + 5] = bottomStartIndex + 1;
+            currentVertexIndex += 6;
+        }
+        #endregion
+
+        #region Add UV
+
+        float startX = GetUVStartCoord(cubeData.cubeType)[0];
+        float startY = GetUVStartCoord(cubeData.cubeType)[1];
+
+        Vector2[] uvs = new Vector2[vertexCount];
+        currentVertexIndex = 0;
+        if (cubeData.leftSide)
+        {
+            uvs[currentVertexIndex] = new Vector2(startX, startY);
+            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            currentVertexIndex += 4;
+        }
+
+        if (cubeData.frontSide)
+        {
+            uvs[currentVertexIndex] = new Vector2(startX, startY);
+            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            currentVertexIndex += 4;
+        }
+
+        if (cubeData.backSide)
+        {
+            uvs[currentVertexIndex] = new Vector2(startX, startY);
+            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            currentVertexIndex += 4;
+        }
+
+        if (cubeData.rightSide)
+        {
+            uvs[currentVertexIndex] = new Vector2(startX, startY);
+            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            currentVertexIndex += 4;
+        }
+
+        if (cubeData.topSide)
+        {
+            uvs[currentVertexIndex] = new Vector2(startX, startY);
+            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            currentVertexIndex += 4;
+        }
+
+        if (cubeData.bottomSide)
+        {
+            uvs[currentVertexIndex] = new Vector2(startX, startY);
+            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            currentVertexIndex += 4;
+        }
+        #endregion
+
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.uv = uvs;
+
+        mesh.Optimize();
+        mesh.RecalculateNormals();
+    }
+
+    private int GetVertexCount(CubeData cubeData)
+    {
+        int vertexCount = 0;
+        if (cubeData.frontSide)
+        {
+            vertexCount += 4;
+        }
+
+        if (cubeData.backSide)
+        {
+            vertexCount += 4;
+        }
+
+        if (cubeData.leftSide)
+        {
+            vertexCount += 4;
+        }
+
+        if (cubeData.rightSide)
+        {
+            vertexCount += 4;
+        }
+
+        if (cubeData.topSide)
+        {
+            vertexCount += 4;
+        }
+
+        if (cubeData.bottomSide)
+        {
+            vertexCount += 4;
+        }
+
+        return vertexCount;
+    }
+
+    private int GetTriangleCount(CubeData cubeData)
+    {
+        int vertexCount = 0;
+        if (cubeData.frontSide)
+        {
+            vertexCount += 6;
+        }
+
+        if (cubeData.backSide)
+        {
+            vertexCount += 6;
+        }
+
+        if (cubeData.leftSide)
+        {
+            vertexCount += 6;
+        }
+
+        if (cubeData.rightSide)
+        {
+            vertexCount += 6;
+        }
+        
+        if (cubeData.topSide)
+        {
+            vertexCount += 6;
+        }
+
+        if (cubeData.bottomSide)
+        {
+            vertexCount += 6;
+        }
+
+        return vertexCount;
+    }
+
+    private float[] GetUVStartCoord(CubeType cubeType)
+    {
+        if (cubeType == CubeType.dirt)
+        {
+            return new float[2]{0, 1};
+        }
+        else if (cubeType == CubeType.sand)
+        {
+            return new float[2]{0, 0.5f};
+        }
+        else if (cubeType == CubeType.grass)
+        {
+            return new float[2]{0.5f, 1};
+        }
+        else if (cubeType == CubeType.water)
+        {
+            return new float[2]{0.5f, 0.5f};
+        }
+
+        return new float[2]{0, 1};
+    }
+}

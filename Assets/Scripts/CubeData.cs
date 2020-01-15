@@ -7,4 +7,13 @@ class CubeData
     public bool topSide;
     public bool bottomSide;
     public float size = 1;
+    public CubeType cubeType;
+}
+
+public enum CubeType
+{
+    dirt,
+    grass,
+    sand,
+    water
 }
