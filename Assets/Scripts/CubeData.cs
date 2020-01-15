@@ -1,4 +1,4 @@
-class CubeData
+public class CubeData
 {
     public bool frontSide;
     public bool backSide;

@@ -10,23 +10,9 @@ public class MultipleCube : MonoBehaviour
         // add mesh
         GetComponent<MeshFilter>().mesh = mesh = new Mesh();
         mesh.name = "Procedural Grid";
-
-        CubeData cubeData = new CubeData{
-            frontSide = true,
-            backSide = true,
-            leftSide = true,
-            rightSide = true,
-            topSide = true,
-            bottomSide = false,
-            cubeType = CubeType.dirt
-        };
-
-        PutCube(Vector3.zero, cubeData);
-        PutCube(new Vector3(1,0,0), cubeData);
-        PutCube(new Vector3(1,1,0), cubeData);
     }
 
-    private void PutCube(Vector3 startPos, CubeData cubeData)
+    public void PutCube(Vector3 startPos, CubeData cubeData)
     {
         #region Add Vertices
 
