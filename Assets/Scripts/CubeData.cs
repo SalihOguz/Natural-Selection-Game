@@ -1,13 +1,13 @@
 public class CubeData
 {
-    public bool frontSide;
-    public bool backSide;
-    public bool leftSide;
-    public bool rightSide;
-    public bool topSide;
-    public bool bottomSide;
+    public bool frontSide = false;
+    public bool backSide = false;
+    public bool leftSide = false;
+    public bool rightSide = false;
+    public bool topSide = true;
+    public bool bottomSide = false;
     public float size = 1;
-    public CubeType cubeType;
+    public CubeType cubeType = CubeType.dirt;
 }
 
 public enum CubeType

@@ -14,13 +14,16 @@ public class MapGenerator : MonoBehaviour
 
     private void Start() 
     {
+        float startTime = Time.time;
         cubePosList = new Vector3[rowCount, columnCount];
 
         for (int i = 0; i < rowCount; i++)
         {
             for (int j = 0; j < columnCount; j++)
             {
-                cubePosList[i, j] = new Vector3(i, 0, j);
+                float y = Mathf.PerlinNoise((float)i/8, (float)j/8) * 10;
+                print(y + " " + (int)y);
+                cubePosList[i, j] = new Vector3(i, (int)y, j);
             }
         }
 
@@ -29,18 +32,73 @@ public class MapGenerator : MonoBehaviour
             for (int j = 0; j < columnCount; j++)
             {
                 CubeData cubeData = new CubeData{
-                    frontSide = true,
-                    backSide = true,
-                    leftSide = true,
-                    rightSide = true,
-                    topSide = true,
-                    bottomSide = false,
-                    cubeType = CubeType.dirt
+
                 };
+
+                if (i == 0)
+                {
+                    cubeData.leftSide = true;
+
+                    if (cubePosList[i, j].y > cubePosList[i + 1, j].y)
+                    {
+                        cubeData.rightSide = true;
+                    }
+                }
+                else if (i == rowCount - 1)
+                {
+                    cubeData.rightSide = true;
+
+                    if (cubePosList[i, j].y > cubePosList[i - 1, j].y)
+                    {
+                        cubeData.leftSide = true;
+                    }
+                }
+                else
+                {
+                    if (cubePosList[i, j].y > cubePosList[i + 1, j].y)
+                    {
+                        cubeData.rightSide = true;
+                    }
+                    else if (cubePosList[i, j].y > cubePosList[i - 1, j].y)
+                    {
+                        cubeData.leftSide = true;
+                    }
+                }
+
+                if (j == 0)
+                {
+                    cubeData.backSide = true;
+
+                    if (cubePosList[i, j].y > cubePosList[i, j + 1].y)
+                    {
+                        cubeData.frontSide = true;
+                    }
+                }
+                else if (j == columnCount - 1)
+                {
+                    cubeData.frontSide = true;
+
+                    if (cubePosList[i, j].y > cubePosList[i, j - 1].y)
+                    {
+                        cubeData.backSide = true;
+                    }
+                }
+                else
+                {
+                    if (cubePosList[i, j].y > cubePosList[i, j + 1].y)
+                    {
+                        cubeData.frontSide = true;
+                    }
+                    else if (cubePosList[i, j].y > cubePosList[i, j - 1].y)
+                    {
+                        cubeData.backSide = true;
+                    }
+                }
 
                 _cube.PutCube(cubePosList[i, j], cubeData);
             }
         }
 
+        print(Time.time - startTime);
     }
 }
