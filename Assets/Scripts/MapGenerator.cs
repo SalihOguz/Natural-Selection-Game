@@ -14,15 +14,14 @@ public class MapGenerator : MonoBehaviour
 
     private void Start() 
     {
-        float startTime = Time.time;
+        float startTime = Time.realtimeSinceStartup;
         cubePosList = new Vector3[rowCount, columnCount];
 
         for (int i = 0; i < rowCount; i++)
         {
             for (int j = 0; j < columnCount; j++)
             {
-                float y = Mathf.PerlinNoise((float)i/8, (float)j/8) * 10;
-                print(y + " " + (int)y);
+                float y = Mathf.PerlinNoise((float)i/10, (float)j/10) * 10;
                 cubePosList[i, j] = new Vector3(i, (int)y, j);
             }
         }
@@ -59,7 +58,7 @@ public class MapGenerator : MonoBehaviour
                     {
                         cubeData.rightSide = true;
                     }
-                    else if (cubePosList[i, j].y > cubePosList[i - 1, j].y)
+                    if (cubePosList[i, j].y > cubePosList[i - 1, j].y)
                     {
                         cubeData.leftSide = true;
                     }
@@ -89,7 +88,7 @@ public class MapGenerator : MonoBehaviour
                     {
                         cubeData.frontSide = true;
                     }
-                    else if (cubePosList[i, j].y > cubePosList[i, j - 1].y)
+                    if (cubePosList[i, j].y > cubePosList[i, j - 1].y)
                     {
                         cubeData.backSide = true;
                     }
@@ -99,6 +98,6 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
-        print(Time.time - startTime);
+        print(rowCount*columnCount + " cubes created in " + (Time.realtimeSinceStartup - startTime));
     }
 }
