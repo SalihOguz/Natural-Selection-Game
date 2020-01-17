@@ -27,6 +27,8 @@ public class MultipleCube : MonoBehaviour
         float side = cubeData.size / 2f;
         int currentVertexIndex = mesh.vertices.Length;
         int leftStartIndex = 0, rightStartIndex = 0, frontStartIndex = 0, backStartIndex = 0, topStartIndex = 0, bottomStartIndex = 0;
+
+        // research done
         
         if (cubeData.leftSide)
         {
