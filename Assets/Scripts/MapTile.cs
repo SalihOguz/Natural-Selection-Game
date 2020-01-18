@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class MultipleCube : MonoBehaviour
+public class MapTile : MonoBehaviour
 {
     private Mesh mesh;
 
@@ -12,7 +12,7 @@ public class MultipleCube : MonoBehaviour
         mesh.name = "Procedural Grid";
     }
 
-    public void PutCube(Vector3 startPos, CubeData cubeData)
+    public void PutTile(Vector3 startPos, CubeData cubeData)
     {
         #region Add Vertices
 
