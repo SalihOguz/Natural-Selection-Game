@@ -12,7 +12,7 @@ public class MapTile : MonoBehaviour
         mesh.name = "Procedural Grid";
     }
 
-    public void PutTile(Vector3 startPos, CubeData cubeData)
+    public void PutCubeToTile(Vector3 startPos, CubeData cubeData)
     {
         #region Add Vertices
 

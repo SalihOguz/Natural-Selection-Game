@@ -16,6 +16,11 @@ public class MapGenerator : MonoBehaviour
     public int tileRowLength;
     public int tileColumnLength;
 
+    public float waterPercentage = 0.2f;
+
+    public int maxHeight = 10;
+    public float noiseScale;
+
     private Vector3[,] cubePosList;
     private List<MapTile> _mapTileList = new List<MapTile>();
     
@@ -35,7 +40,7 @@ public class MapGenerator : MonoBehaviour
         {
             for (int j = 0; j < columnCount / tileColumnLength; j++)
             {
-                StartCoroutine(GenerateTile(i * tileRowLength, j * tileColumnLength, _mapTileList[tileIndex]));
+                GenerateTile(i * tileRowLength, j * tileColumnLength, _mapTileList[tileIndex]);
                 tileIndex++;
             }
         }
@@ -43,20 +48,102 @@ public class MapGenerator : MonoBehaviour
         print(rowCount*columnCount + " cubes created as " + tileRowLength + "X" + tileColumnLength + "tiles in " + (Time.realtimeSinceStartup - startTime));
     }
 
-    private IEnumerator GenerateTile(int startX, int startY, MapTile tile)
+    private void GenerateTile(int startX, int startY, MapTile tile)
     {
-        yield return new WaitForEndOfFrame();
-        for (int i = startX; i < Mathf.Clamp(startX + tileRowLength, 0, rowCount - 1); i++)
-        {
-            for (int j = startY; j < Mathf.Clamp(startY + tileColumnLength, 0, columnCount - 1); j++)
-            {
-                CubeData cubeData = new CubeData();
-                cubeData = ArrangeCubeSides(cubeData, i, j);
-                cubeData = ArrangeCubeType(cubeData, i, j);
+        int endX = Mathf.Clamp(startX + tileRowLength, 0, rowCount - 1);
+        int endY = Mathf.Clamp(startY + tileColumnLength, 0, columnCount - 1);
 
-                tile.PutTile(cubePosList[i, j], cubeData);
+        for (int i = startX; i < endX; i++)
+        {
+            for (int j = startY; j < endY; j++)
+            {
+                GenerateCube(tile, i, j);
+
+                if (i == 0 || j == 0 || i == rowCount - 2 || j == columnCount - 2)
+                {
+                    for (int k = (int)(waterPercentage * maxHeight); k < cubePosList[i, j].y; k++)
+                    {
+                        GenerateFillingCube(tile, i, j, k);
+                    }
+                }
+                // if (i < rowCount - 1 && cubePosList[i, j].y > cubePosList[i + 1, j].y + 1)
+                // {
+                //     for (int k = 0; k < cubePosList[i + 1, j].y - cubePosList[i, j].y; k++)
+                //     {
+                //         GenerateFillingCube(tile, i, j, k);
+                //     }
+                // }
+                // if (i > 0 && cubePosList[i, j].y > cubePosList[i - 1, j].y + 1)
+                // {
+                //     for (int k = 0; k < cubePosList[i - 1, j].y - cubePosList[i, j].y; k++)
+                //     {
+                //         GenerateFillingCube(tile, i, j, k);
+                //     }
+                // }
+                // if (i < rowCount - 1 && cubePosList[i, j].y < cubePosList[i + 1, j].y - 1)
+                // {
+                //     for (int k = 0; k < cubePosList[i + 1, j].y - cubePosList[i, j].y; k++)
+                //     {
+                //         GenerateFillingCube(tile, i, j, k);
+                //     }
+                // }
+                // if (i > 0 && cubePosList[i, j].y < cubePosList[i - 1, j].y - 1)
+                // {
+                //     for (int k = 0; k < cubePosList[i - 1, j].y - cubePosList[i, j].y; k++)
+                //     {
+                //         GenerateFillingCube(tile, i, j, k);
+                //     }
+                // }
+                
+                // if (j < columnCount - 1 && cubePosList[i, j].y > cubePosList[i, j + 1].y + 1)
+                // {
+                //     for (int k = 0; k < cubePosList[i, j + 1].y - cubePosList[i, j].y; k++)
+                //     {
+                //         GenerateFillingCube(tile, i, j, k);
+                //     }
+                // }
+                // if (j > 0 && cubePosList[i, j].y > cubePosList[i, j - 1].y + 1)
+                // {
+                //     for (int k = 0; k < cubePosList[i, j - 1].y - cubePosList[i, j].y; k++)
+                //     {
+                //         GenerateFillingCube(tile, i, j, k);
+                //     }
+                // }
+                // if (j < columnCount - 1 && cubePosList[i, j].y < cubePosList[i, j + 1].y - 1)
+                // {
+                //     for (int k = 0; k < cubePosList[i, j + 1].y - cubePosList[i, j].y; k++)
+                //     {
+                //         GenerateFillingCube(tile, i, j, k);
+                //     }
+                // }
+                // if (j > 0 && cubePosList[i, j].y < cubePosList[i, j - 1].y - 1)
+                // {
+                //     for (int k = 0; k < cubePosList[i, j - 1].y - cubePosList[i, j].y; k++)
+                //     {
+                //         GenerateFillingCube(tile, i, j, k);
+                //     }
+                // }
             }
         }
+    }
+
+    private void GenerateCube(MapTile tile, int i, int j)
+    {
+        CubeData cubeData = new CubeData();
+        cubeData = ArrangeCubeSides(cubeData, i, j);
+        cubeData = ArrangeCubeType(cubeData, cubePosList[i, j].y);
+
+        tile.PutCubeToTile(cubePosList[i, j], cubeData);
+    }
+
+    private void GenerateFillingCube(MapTile tile, int i, int j, int posY)
+    {
+        CubeData cubeData = new CubeData();
+        cubeData = ArrangeCubeSides(cubeData, i, j);
+        cubeData = ArrangeCubeType(cubeData, posY);
+
+        Vector3 pos = cubePosList[i, j];
+        tile.PutCubeToTile(new Vector3(pos.x, posY, pos.z), cubeData);
     }
 
     private CubeData ArrangeCubeSides(CubeData cubeData, int i, int j)
@@ -70,7 +157,7 @@ public class MapGenerator : MonoBehaviour
                 cubeData.rightSide = true;
             }
         }
-        else if (i == rowCount - 1)
+        else if (i == rowCount - 2)
         {
             cubeData.rightSide = true;
 
@@ -100,7 +187,7 @@ public class MapGenerator : MonoBehaviour
                 cubeData.frontSide = true;
             }
         }
-        else if (j == columnCount - 1)
+        else if (j == columnCount - 2)
         {
             cubeData.frontSide = true;
 
@@ -124,17 +211,17 @@ public class MapGenerator : MonoBehaviour
         return cubeData;
     }
 
-    private CubeData ArrangeCubeType(CubeData cubeData, int i, int j)
+    private CubeData ArrangeCubeType(CubeData cubeData, float posY)
     {
-        if (cubePosList[i, j].y < 2)
+        if (posY <= maxHeight * waterPercentage)
         {
             cubeData.cubeType = CubeType.water;
         }
-        else if (cubePosList[i, j].y < 4)
+        else if (posY < maxHeight * 0.3f)
         {
             cubeData.cubeType = CubeType.sand;
         }
-        else if (cubePosList[i, j].y < 7)
+        else if (posY< maxHeight * 0.7f)
         {
             cubeData.cubeType = CubeType.grass;
         }
@@ -170,7 +257,7 @@ public class MapGenerator : MonoBehaviour
         {
             for (int j = 0; j < columnCount; j++)
             {
-                float y = Mathf.PerlinNoise((float)i/10, (float)j/10) * 10;
+                float y = Mathf.Clamp(Mathf.PerlinNoise((float)i*noiseScale, (float)j*noiseScale) * maxHeight, waterPercentage * maxHeight, maxHeight);
                 cubePosList[i, j] = new Vector3(i, (int)y, j);
             }
         }

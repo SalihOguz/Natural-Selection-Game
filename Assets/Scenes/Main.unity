@@ -6714,10 +6714,13 @@ MonoBehaviour:
   _mapTileParent: {fileID: 1975231386}
   _mapTilePrefab: {fileID: 1719408040328642633, guid: cfe5e475936647d439aaeb19de638930,
     type: 3}
-  rowCount: 100
-  columnCount: 100
-  tileRowLength: 4
-  tileColumnLength: 4
+  rowCount: 50
+  columnCount: 50
+  tileRowLength: 2
+  tileColumnLength: 2
+  waterPercentage: 0.2
+  maxHeight: 30
+  noiseScale: 0.05
 --- !u!4 &2098761292
 Transform:
   m_ObjectHideFlags: 0
