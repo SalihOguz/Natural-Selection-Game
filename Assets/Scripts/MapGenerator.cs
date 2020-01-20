@@ -21,9 +21,14 @@ public class MapGenerator : MonoBehaviour
     public int maxHeight = 10;
     public float noiseScale;
 
-    private Vector3[,] cubePosList;
+    [HideInInspector]
+    public Vector3[,] cubePosList;
     private List<MapTile> _mapTileList = new List<MapTile>();
+    public static MapGenerator Instance;
     
+    private void Awake() {
+        Instance = this;
+    }
 
     private void Start() 
     {
@@ -46,6 +51,8 @@ public class MapGenerator : MonoBehaviour
         }
 
         print(rowCount*columnCount + " cubes created as " + tileRowLength + "X" + tileColumnLength + "tiles in " + (Time.realtimeSinceStartup - startTime));
+
+        AnimalManager.Instance.SpawnAnimals();
     }
 
     private void GenerateTile(int startX, int startY, MapTile tile)
