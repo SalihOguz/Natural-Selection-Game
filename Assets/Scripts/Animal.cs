@@ -24,53 +24,45 @@ public class Animal : MonoBehaviour
 
     IEnumerator Walk()
     {
-        yield return new WaitForSeconds(0.5f / WalkingSpeed);
+        int direction = GetDirection();
 
-        int direction = Random.Range(0, 4);
+        yield return new WaitForSeconds(0.2f / WalkingSpeed);
 
+        // change diraction
         if (direction == 0) // front
         {
-            if (currentY == cubePosList.GetLength(1) - 1)
-            {
-                GoBack();
-            }
-            else
-            {
-                GoForward();
-            }
+            TurnForward();
         }
         if (direction == 1) // back
         {
-            if (currentY == 0)
-            {
-                GoForward();
-            }
-            else
-            {
-                GoBack();
-            }
+            TurnBack();
         }
         if (direction == 2) // right
         {
-            if (currentX == cubePosList.GetLength(0) - 1)
-            {
-                GoLeft();
-            }
-            else
-            {
-                GoRight();
-            }
+            TurnRight();
         }
         if (direction == 3) // left
         {
-            if (currentX == 0)
-            {
-                GoRight();
-            }
-            else
-            {
-                GoLeft();
-            }
+            TurnLeft();
+        }
+
+        yield return new WaitForSeconds(0.3f / WalkingSpeed);
+
+        if (direction == 0) // front
+        {
+            GoForward();
+        }
+        if (direction == 1) // back
+        {
+            GoBack();
+        }
+        if (direction == 2) // right
+        {
+            GoRight();
+        }
+        if (direction == 3) // left
+        {
+            GoLeft();
         }
 
         transform.DOMove(cubePosList[currentX, currentY] + (Vector3.up / 2), 0.2f);
@@ -79,25 +71,76 @@ public class Animal : MonoBehaviour
 
     private void GoForward()
     {
-        currentY++;
-        transform.DORotate(Vector3.zero, 0.2f);
+        currentY++;     
     }
 
     private void GoBack()
     {
-        currentY--;
-        transform.DORotate(new Vector3(0, 180f, 0), 0.2f);
+        currentY--;  
     }
 
     private void GoRight()
     {
         currentX++;
-        transform.DORotate(new Vector3(0, 90f, 0), 0.2f);
     }
 
     private void GoLeft()
     {
         currentX--;
+    }
+
+    private void TurnForward()
+    {
+        transform.DORotate(Vector3.zero, 0.2f);
+    }
+
+    private void TurnBack()
+    {
+        transform.DORotate(new Vector3(0, 180f, 0), 0.2f);
+    }
+
+    private void TurnRight()
+    {
+        transform.DORotate(new Vector3(0, 90f, 0), 0.2f);
+    }
+
+    private void TurnLeft()
+    {
         transform.DORotate(new Vector3(0, -90f, 0), 0.2f);
+    }
+    private int GetDirection()
+    {
+        int direction = Random.Range(0, 4);
+
+        if (direction == 0) // front
+        {
+            if (currentY == cubePosList.GetLength(1) - 1)
+            {
+                direction = 1;
+            }
+        }
+        if (direction == 1) // back
+        {
+            if (currentY == 0)
+            {
+               direction = 0;
+            }
+        }
+        if (direction == 2) // right
+        {
+            if (currentX == cubePosList.GetLength(0) - 1)
+            {
+                direction = 3;
+            }
+        }
+        if (direction == 3) // left
+        {
+            if (currentX == 0)
+            {
+                direction = 2;
+            }
+        }
+
+        return direction;
     }
 }
