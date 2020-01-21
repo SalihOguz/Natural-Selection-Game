@@ -73,63 +73,36 @@ public class MapGenerator : MonoBehaviour
                         GenerateFillingCube(tile, i, j, k);
                     }
                 }
-                // if (i < rowCount - 1 && cubePosList[i, j].y > cubePosList[i + 1, j].y + 1)
-                // {
-                //     for (int k = 0; k < cubePosList[i + 1, j].y - cubePosList[i, j].y; k++)
-                //     {
-                //         GenerateFillingCube(tile, i, j, k);
-                //     }
-                // }
-                // if (i > 0 && cubePosList[i, j].y > cubePosList[i - 1, j].y + 1)
-                // {
-                //     for (int k = 0; k < cubePosList[i - 1, j].y - cubePosList[i, j].y; k++)
-                //     {
-                //         GenerateFillingCube(tile, i, j, k);
-                //     }
-                // }
-                // if (i < rowCount - 1 && cubePosList[i, j].y < cubePosList[i + 1, j].y - 1)
-                // {
-                //     for (int k = 0; k < cubePosList[i + 1, j].y - cubePosList[i, j].y; k++)
-                //     {
-                //         GenerateFillingCube(tile, i, j, k);
-                //     }
-                // }
-                // if (i > 0 && cubePosList[i, j].y < cubePosList[i - 1, j].y - 1)
-                // {
-                //     for (int k = 0; k < cubePosList[i - 1, j].y - cubePosList[i, j].y; k++)
-                //     {
-                //         GenerateFillingCube(tile, i, j, k);
-                //     }
-                // }
+
+                if (i < rowCount - 1 && cubePosList[i, j].y > cubePosList[i + 1, j].y + 1)
+                {
+                    for (int k = (int)cubePosList[i + 1, j].y + 1; k < cubePosList[i, j].y; k++)
+                    {
+                        GenerateFillingCube(tile, i, j, k);
+                    }
+                }
+                if (i > 0 && cubePosList[i, j].y > cubePosList[i - 1, j].y + 1)
+                {
+                    for (int k = (int)cubePosList[i - 1, j].y + 1; k < cubePosList[i, j].y; k++)
+                    {
+                        GenerateFillingCube(tile, i, j, k);
+                    }
+                }
                 
-                // if (j < columnCount - 1 && cubePosList[i, j].y > cubePosList[i, j + 1].y + 1)
-                // {
-                //     for (int k = 0; k < cubePosList[i, j + 1].y - cubePosList[i, j].y; k++)
-                //     {
-                //         GenerateFillingCube(tile, i, j, k);
-                //     }
-                // }
-                // if (j > 0 && cubePosList[i, j].y > cubePosList[i, j - 1].y + 1)
-                // {
-                //     for (int k = 0; k < cubePosList[i, j - 1].y - cubePosList[i, j].y; k++)
-                //     {
-                //         GenerateFillingCube(tile, i, j, k);
-                //     }
-                // }
-                // if (j < columnCount - 1 && cubePosList[i, j].y < cubePosList[i, j + 1].y - 1)
-                // {
-                //     for (int k = 0; k < cubePosList[i, j + 1].y - cubePosList[i, j].y; k++)
-                //     {
-                //         GenerateFillingCube(tile, i, j, k);
-                //     }
-                // }
-                // if (j > 0 && cubePosList[i, j].y < cubePosList[i, j - 1].y - 1)
-                // {
-                //     for (int k = 0; k < cubePosList[i, j - 1].y - cubePosList[i, j].y; k++)
-                //     {
-                //         GenerateFillingCube(tile, i, j, k);
-                //     }
-                // }
+                if (j < columnCount - 1 && cubePosList[i, j].y > cubePosList[i, j + 1].y + 1)
+                {
+                    for (int k = (int)cubePosList[i, j + 1].y + 1; k < cubePosList[i, j].y; k++)
+                    {
+                        GenerateFillingCube(tile, i, j, k);
+                    }
+                }
+                if (j > 0 && cubePosList[i, j].y > cubePosList[i, j - 1].y + 1)
+                {
+                    for (int k = (int)cubePosList[i, j - 1].y + 1; k < cubePosList[i, j].y; k++)
+                    {
+                        GenerateFillingCube(tile, i, j, k);
+                    }
+                }
             }
         }
     }
@@ -137,7 +110,7 @@ public class MapGenerator : MonoBehaviour
     private void GenerateCube(MapTile tile, int i, int j)
     {
         CubeData cubeData = new CubeData();
-        cubeData = ArrangeCubeSides(cubeData, i, j);
+        cubeData = ArrangeCubeSides(cubeData, i, j, (int)cubePosList[i, j].y);
         cubeData = ArrangeCubeType(cubeData, cubePosList[i, j].y);
 
         tile.PutCubeToTile(cubePosList[i, j], cubeData);
@@ -146,20 +119,20 @@ public class MapGenerator : MonoBehaviour
     private void GenerateFillingCube(MapTile tile, int i, int j, int posY)
     {
         CubeData cubeData = new CubeData();
-        cubeData = ArrangeCubeSides(cubeData, i, j);
+        cubeData = ArrangeCubeSides(cubeData, i, j, posY);
         cubeData = ArrangeCubeType(cubeData, posY);
 
         Vector3 pos = cubePosList[i, j];
         tile.PutCubeToTile(new Vector3(pos.x, posY, pos.z), cubeData);
     }
 
-    private CubeData ArrangeCubeSides(CubeData cubeData, int i, int j)
+    private CubeData ArrangeCubeSides(CubeData cubeData, int i, int j, int posY)
     {
         if (i == 0)
         {
             cubeData.leftSide = true;
 
-            if (cubePosList[i, j].y > cubePosList[i + 1, j].y)
+            if (posY > cubePosList[i + 1, j].y)
             {
                 cubeData.rightSide = true;
             }
@@ -168,18 +141,18 @@ public class MapGenerator : MonoBehaviour
         {
             cubeData.rightSide = true;
 
-            if (cubePosList[i, j].y > cubePosList[i - 1, j].y)
+            if (posY > cubePosList[i - 1, j].y)
             {
                 cubeData.leftSide = true;
             }
         }
         else
         {
-            if (cubePosList[i, j].y > cubePosList[i + 1, j].y)
+            if (posY > cubePosList[i + 1, j].y)
             {
                 cubeData.rightSide = true;
             }
-            if (cubePosList[i, j].y > cubePosList[i - 1, j].y)
+            if (posY > cubePosList[i - 1, j].y)
             {
                 cubeData.leftSide = true;
             }
@@ -189,7 +162,7 @@ public class MapGenerator : MonoBehaviour
         {
             cubeData.backSide = true;
 
-            if (cubePosList[i, j].y > cubePosList[i, j + 1].y)
+            if (posY > cubePosList[i, j + 1].y)
             {
                 cubeData.frontSide = true;
             }
@@ -198,18 +171,18 @@ public class MapGenerator : MonoBehaviour
         {
             cubeData.frontSide = true;
 
-            if (cubePosList[i, j].y > cubePosList[i, j - 1].y)
+            if (posY > cubePosList[i, j - 1].y)
             {
                 cubeData.backSide = true;
             }
         }
         else
         {
-            if (cubePosList[i, j].y > cubePosList[i, j + 1].y)
+            if (posY > cubePosList[i, j + 1].y)
             {
                 cubeData.frontSide = true;
             }
-            if (cubePosList[i, j].y > cubePosList[i, j - 1].y)
+            if (posY > cubePosList[i, j - 1].y)
             {
                 cubeData.backSide = true;
             }
