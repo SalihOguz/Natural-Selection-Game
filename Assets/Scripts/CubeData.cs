@@ -8,6 +8,7 @@ public class CubeData
     public bool bottomSide = false;
     public float size = 1;
     public CubeType cubeType = CubeType.dirt;
+    public CubeFeature cubeFeature = CubeFeature.none;
 }
 
 public enum CubeType
@@ -16,4 +17,11 @@ public enum CubeType
     grass,
     sand,
     water
+}
+
+public enum CubeFeature
+{
+    none,
+    tree,
+    plant
 }
