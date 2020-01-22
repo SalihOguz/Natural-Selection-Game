@@ -137,7 +137,12 @@ public class MapGenerator : MonoBehaviour
 
     private CubeData AddCubeFeature(CubeData cubeData, int i, int j)
     {
-        if (Random.Range(0, 100) < 10)
+        if (cubeData.cubeType == CubeType.water)
+        {
+            return cubeData;
+        }
+
+        if (Random.Range(0, 100) < 2)
         {
             cubeData.cubeFeature = CubeFeature.tree;
 
@@ -254,11 +259,16 @@ public class MapGenerator : MonoBehaviour
     {
         cubePosList = new Vector3[rowCount, columnCount];
 
+        float offsetX = Random.Range(-90000, 90000);
+        float offsetY = Random.Range(-90000, 90000);
+
         for (int i = 0; i < rowCount; i++)
         {
             for (int j = 0; j < columnCount; j++)
             {
-                float y = Mathf.Clamp(Mathf.PerlinNoise((float)i*noiseScale, (float)j*noiseScale) * maxHeight, waterPercentage * maxHeight, maxHeight);
+                // float y = Mathf.Clamp(Mathf.PerlinNoise(((float)i / (float)rowCount * noiseScale) + offsetX, ((float)j / (float)columnCount * noiseScale) + offsetY) * maxHeight, waterPercentage * maxHeight, maxHeight);
+
+                float y = Mathf.Clamp(Mathf.PerlinNoise(offsetX + (float)i*noiseScale, offsetY + (float)j*noiseScale) * maxHeight, waterPercentage * maxHeight, maxHeight);
                 cubePosList[i, j] = new Vector3(i, (int)y, j);
             }
         }

@@ -8800,10 +8800,10 @@ MonoBehaviour:
     type: 3}
   _treePrefab: {fileID: 567377767350856912, guid: 1eaf167c1e044bf4f9416d64a65fe83d,
     type: 3}
-  rowCount: 100
-  columnCount: 100
-  tileRowLength: 2
-  tileColumnLength: 2
+  rowCount: 50
+  columnCount: 50
+  tileRowLength: 1
+  tileColumnLength: 1
   waterPercentage: 0.2
   maxHeight: 30
   noiseScale: 0.05
