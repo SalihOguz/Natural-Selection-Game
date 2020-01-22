@@ -46,7 +46,7 @@ public class Animal : MonoBehaviour
             TurnLeft();
         }
 
-        yield return new WaitForSeconds(0.3f / WalkingSpeed);
+        yield return new WaitForSeconds(0.2f / WalkingSpeed);
 
         if (direction == 0) // front
         {
