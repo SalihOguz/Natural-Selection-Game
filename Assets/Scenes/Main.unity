@@ -467,14 +467,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 29976827}
-  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
+  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1042662087}
   m_Father: {fileID: 1293582230}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
 --- !u!1001 &30378480
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4074,6 +4074,8 @@ GameObject:
   - component: {fileID: 753033826}
   - component: {fileID: 753033824}
   - component: {fileID: 753033823}
+  - component: {fileID: 753033825}
+  - component: {fileID: 753033827}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4111,6 +4113,66 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 753033821}
   m_Enabled: 1
+--- !u!114 &753033825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753033821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volumeTrigger: {fileID: 753033822}
+  volumeLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  stopNaNPropagation: 1
+  finalBlitToCameraTarget: 0
+  antialiasingMode: 3
+  temporalAntialiasing:
+    jitterSpread: 0.75
+    sharpness: 0.25
+    stationaryBlending: 0.95
+    motionBlending: 0.85
+  subpixelMorphologicalAntialiasing:
+    quality: 2
+  fastApproximateAntialiasing:
+    fastMode: 1
+    keepAlpha: 1
+  fog:
+    enabled: 1
+    excludeSkybox: 1
+  debugLayer:
+    lightMeter:
+      width: 512
+      height: 256
+      showCurves: 1
+    histogram:
+      width: 512
+      height: 256
+      channel: 3
+    waveform:
+      exposure: 0.12
+      height: 256
+    vectorscope:
+      size: 256
+      exposure: 0.12
+    overlaySettings:
+      linearDepth: 0
+      motionColorIntensity: 4
+      motionGridSize: 64
+      colorBlindnessType: 0
+      colorBlindnessStrength: 1
+  m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
+  m_ShowToolkit: 1
+  m_ShowCustomSorter: 1
+  breakBeforeColorGrading: 0
+  m_BeforeTransparentBundles: []
+  m_BeforeStackBundles: []
+  m_AfterStackBundles: []
 --- !u!20 &753033826
 Camera:
   m_ObjectHideFlags: 0
@@ -4143,17 +4205,34 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: -1
+  m_RenderingPath: 3
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
-  m_AllowMSAA: 1
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &753033827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753033821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharedProfile: {fileID: 11400000, guid: f8fb7f11cf74eb84984baef54182aa56, type: 2}
+  isGlobal: 0
+  blendDistance: 0
+  weight: 1
+  priority: 0
 --- !u!4 &784734133 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1719408040328642637, guid: cfe5e475936647d439aaeb19de638930,
@@ -4835,7 +4914,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1042662086}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -45}
+  m_LocalPosition: {x: 0, y: 0, z: -65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 753033822}
@@ -5677,13 +5756,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a7781699ea884365b44347e935bc319, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stickMinZoom: -250
-  stickMaxZoom: -45
-  swivelMinZoom: 90
+  stickMinZoom: -100
+  stickMaxZoom: -20
+  swivelMinZoom: 70
   swivelMaxZoom: 45
   moveSpeedMinZoom: 400
   moveSpeedMaxZoom: 100
   rotationSpeed: 180
+  minX: 0
+  maxX: 100
+  minZ: 0
+  maxZ: 100
 --- !u!4 &1293582230
 Transform:
   m_ObjectHideFlags: 0
@@ -5692,7 +5775,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1293582228}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 50, y: 0, z: 30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 29976828}
@@ -8922,12 +9005,12 @@ MonoBehaviour:
     type: 3}
   _treePrefab: {fileID: 567377767350856912, guid: 1eaf167c1e044bf4f9416d64a65fe83d,
     type: 3}
-  rowCount: 50
-  columnCount: 50
+  rowCount: 100
+  columnCount: 100
   tileRowLength: 1
   tileColumnLength: 1
   waterPercentage: 0.2
-  maxHeight: 30
+  maxHeight: 10
   noiseScale: 0.05
 --- !u!4 &2098761292
 Transform:
