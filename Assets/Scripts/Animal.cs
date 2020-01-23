@@ -19,6 +19,12 @@ public class Animal : MonoBehaviour
         transform.position = cubePosList[currentX, currentY] + (Vector3.up / 2);
         gameObject.SetActive(true);
 
+        StartCoroutine(Delay());
+    }
+
+    private IEnumerator Delay()
+    {
+        yield return new WaitForSeconds(Random.Range(0, 0.4f));
         StartCoroutine(Walk());
     }
 
@@ -65,7 +71,16 @@ public class Animal : MonoBehaviour
             GoLeft();
         }
 
-        transform.DOMove(cubePosList[currentX, currentY] + (Vector3.up / 2), 0.2f);
+        Vector3 destination = cubePosList[currentX, currentY] + (Vector3.up / 2);        
+        Vector3 midPoint = (transform.position + destination) / 2 + new Vector3(0, 0.5f, 0);
+        Vector3[] pathWaypoints = new[] {midPoint,
+                                        transform.position + new Vector3(0, 0.5f, 0),
+                                        midPoint - new Vector3(0.5f, 0, 0),
+                                        destination,
+                                        midPoint + new Vector3(0.5f, 0, 0),
+                                        destination + new Vector3(0, 0.5f, 0)};
+
+        transform.DOPath(pathWaypoints, 0.3f, PathType.CubicBezier).SetEase(Ease.OutSine);
         StartCoroutine(Walk());
     }
 

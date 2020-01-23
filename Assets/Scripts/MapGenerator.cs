@@ -16,6 +16,9 @@ public class MapGenerator : MonoBehaviour
     [SerializeField]
     private GameObject _treePrefab;
 
+    [SerializeField]
+    private GameObject _plantPrefab;
+
     public int rowCount;
     public int columnCount;
 
@@ -121,8 +124,6 @@ public class MapGenerator : MonoBehaviour
         cubeData = AddCubeFeature(cubeData, i, j);
 
         tile.PutCubeToTile(cubePosList[i, j], cubeData);
-
-        
     }
 
     private void GenerateFillingCube(MapTile tile, int i, int j, int posY)
@@ -142,11 +143,18 @@ public class MapGenerator : MonoBehaviour
             return cubeData;
         }
 
-        if (Random.Range(0, 100) < 2)
+        int rnd = Random.Range(0, 100);
+        if (rnd < 2)
         {
             cubeData.cubeFeature = CubeFeature.tree;
 
             Instantiate(_treePrefab, cubePosList[i, j], Quaternion.identity, _mapFeaturesPrefab);
+        }
+        else if (rnd < 4)
+        {
+            cubeData.cubeFeature = CubeFeature.plant;
+
+            Instantiate(_plantPrefab, cubePosList[i, j], Quaternion.identity, _mapFeaturesPrefab);
         }
 
         return cubeData;

@@ -5759,7 +5759,7 @@ MonoBehaviour:
   stickMinZoom: -100
   stickMaxZoom: -20
   swivelMinZoom: 70
-  swivelMaxZoom: 45
+  swivelMaxZoom: 30
   moveSpeedMinZoom: 400
   moveSpeedMaxZoom: 100
   rotationSpeed: 180
@@ -9004,6 +9004,8 @@ MonoBehaviour:
   _mapTilePrefab: {fileID: 1719408040328642633, guid: cfe5e475936647d439aaeb19de638930,
     type: 3}
   _treePrefab: {fileID: 567377767350856912, guid: 1eaf167c1e044bf4f9416d64a65fe83d,
+    type: 3}
+  _plantPrefab: {fileID: 567377767350856912, guid: 0cefee4fb68c915418adc1be70b40e88,
     type: 3}
   rowCount: 100
   columnCount: 100
