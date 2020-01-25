@@ -17,7 +17,13 @@ public class MapGenerator : MonoBehaviour
     private GameObject _treePrefab;
 
     [SerializeField]
-    private GameObject _plantPrefab;
+    private GameObject _plantPrefab1;
+
+    [SerializeField]
+    private GameObject _plantPrefab2;
+
+    [SerializeField]
+    private GameObject _plantPrefab3;
 
     public int rowCount;
     public int columnCount;
@@ -32,6 +38,7 @@ public class MapGenerator : MonoBehaviour
 
     [HideInInspector]
     public Vector3[,] cubePosList;
+    public static CubeData[,] cubeDataList;
     private List<MapTile> _mapTileList = new List<MapTile>();
     public static MapGenerator Instance;
     
@@ -47,6 +54,7 @@ public class MapGenerator : MonoBehaviour
     public void GenerateMap()
     {
         float startTime = Time.realtimeSinceStartup;
+        cubeDataList = new CubeData[rowCount, columnCount];
         GenerateHeight();
 
         int tileIndex = 0;
@@ -122,8 +130,10 @@ public class MapGenerator : MonoBehaviour
         cubeData = ArrangeCubeSides(cubeData, i, j, (int)cubePosList[i, j].y);
         cubeData = ArrangeCubeType(cubeData, cubePosList[i, j].y);
         cubeData = AddCubeFeature(cubeData, i, j);
+        cubeData.pos = cubePosList[i, j];
+        cubeDataList[i, j] = cubeData;
 
-        tile.PutCubeToTile(cubePosList[i, j], cubeData);
+        tile.PutCubeToTile(cubeData.pos, cubeData);
     }
 
     private void GenerateFillingCube(MapTile tile, int i, int j, int posY)
@@ -143,18 +153,33 @@ public class MapGenerator : MonoBehaviour
             return cubeData;
         }
 
-        int rnd = Random.Range(0, 100);
-        if (rnd < 2)
+        float rnd = Random.Range(0f, 100f);
+        if (rnd < 1.5f && cubeData.cubeType == CubeType.grass)
         {
             cubeData.cubeFeature = CubeFeature.tree;
 
             Instantiate(_treePrefab, cubePosList[i, j], Quaternion.identity, _mapFeaturesPrefab);
         }
-        else if (rnd < 4)
+        else if (rnd < 2f)
         {
-            cubeData.cubeFeature = CubeFeature.plant;
+            cubeData.cubeFeature = CubeFeature.plant1;
 
-            Instantiate(_plantPrefab, cubePosList[i, j], Quaternion.identity, _mapFeaturesPrefab);
+            GameObject plant = Instantiate(_plantPrefab1, cubePosList[i, j], Quaternion.identity, _mapFeaturesPrefab);
+            cubeData.standingPlant = plant.GetComponent<Plant>();
+        }
+        else if (rnd < 3f)
+        {
+            cubeData.cubeFeature = CubeFeature.plant2;
+
+            GameObject plant = Instantiate(_plantPrefab2, cubePosList[i, j], Quaternion.identity, _mapFeaturesPrefab);
+            cubeData.standingPlant = plant.GetComponent<Plant>();
+        }
+        else if (rnd < 3.5f)
+        {
+            cubeData.cubeFeature = CubeFeature.plant2;
+
+            GameObject plant = Instantiate(_plantPrefab3, cubePosList[i, j], Quaternion.identity, _mapFeaturesPrefab);
+            cubeData.standingPlant = plant.GetComponent<Plant>();
         }
 
         return cubeData;
@@ -274,8 +299,6 @@ public class MapGenerator : MonoBehaviour
         {
             for (int j = 0; j < columnCount; j++)
             {
-                // float y = Mathf.Clamp(Mathf.PerlinNoise(((float)i / (float)rowCount * noiseScale) + offsetX, ((float)j / (float)columnCount * noiseScale) + offsetY) * maxHeight, waterPercentage * maxHeight, maxHeight);
-
                 float y = Mathf.Clamp(Mathf.PerlinNoise(offsetX + (float)i*noiseScale, offsetY + (float)j*noiseScale) * maxHeight, waterPercentage * maxHeight, maxHeight);
                 cubePosList[i, j] = new Vector3(i, (int)y, j);
             }

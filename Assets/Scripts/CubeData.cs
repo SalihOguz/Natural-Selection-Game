@@ -1,5 +1,8 @@
+using UnityEngine;
+
 public class CubeData
 {
+    public Vector3 pos;
     public bool frontSide = false;
     public bool backSide = false;
     public bool leftSide = false;
@@ -9,6 +12,8 @@ public class CubeData
     public float size = 1;
     public CubeType cubeType = CubeType.dirt;
     public CubeFeature cubeFeature = CubeFeature.none;
+    public Animal standingAnimal;
+    public Plant standingPlant;
 }
 
 public enum CubeType
@@ -23,5 +28,7 @@ public enum CubeFeature
 {
     none,
     tree,
-    plant
+    plant1,
+    plant2,
+    plant3
 }

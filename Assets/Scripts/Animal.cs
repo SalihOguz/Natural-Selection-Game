@@ -6,18 +6,33 @@ using DG.Tweening;
 public class Animal : MonoBehaviour
 {
     public float WalkingSpeed = 1;
+    public float MaxEnergy = 5;
+    
+    [HideInInspector]
+    public float EnergyAmount;
+    
+
+
+
+
     private int currentX;
     private int currentY;
 
-    private Vector3[,] cubePosList;
+    private int rowCount;
+    private int columnCount;
+
+    private int animalDirection;
 
     public void Spanw()
     {
-        cubePosList = MapGenerator.Instance.cubePosList;
-        currentX = Random.Range(0, cubePosList.GetLength(0));
-        currentY = Random.Range(0, cubePosList.GetLength(1));
-        transform.position = cubePosList[currentX, currentY] + (Vector3.up / 2);
+        rowCount = MapGenerator.Instance.rowCount;
+        columnCount = MapGenerator.Instance.columnCount;
+
+        GetValidPositionToSpawn();
+        transform.position = MapGenerator.cubeDataList[currentX, currentY].pos + (Vector3.up / 2);
         gameObject.SetActive(true);
+
+        MapGenerator.cubeDataList[currentX, currentY].standingAnimal = this;
 
         StartCoroutine(Delay());
     }
@@ -25,62 +40,66 @@ public class Animal : MonoBehaviour
     private IEnumerator Delay()
     {
         yield return new WaitForSeconds(Random.Range(0, 0.4f));
+        GetNewRandomDirection();
         StartCoroutine(Walk());
     }
 
     IEnumerator Walk()
     {
-        int direction = GetDirection();
+        if (Random.Range(0f,3f) <= 1.2f)
+        {
+            GetNewRandomDirection();
+        }
+        CheckDirectionValidation();
 
         yield return new WaitForSeconds(0.2f / WalkingSpeed);
 
         // change diraction
-        if (direction == 0) // front
+        if (animalDirection == 0) // front
         {
             TurnForward();
         }
-        if (direction == 1) // back
+        if (animalDirection == 1) // back
         {
             TurnBack();
         }
-        if (direction == 2) // right
+        if (animalDirection == 2) // right
         {
             TurnRight();
         }
-        if (direction == 3) // left
+        if (animalDirection == 3) // left
         {
             TurnLeft();
         }
 
         yield return new WaitForSeconds(0.2f / WalkingSpeed);
+        MapGenerator.cubeDataList[currentX, currentY].standingAnimal = null;
 
-        if (direction == 0) // front
+
+        if (animalDirection == 0) // front
         {
             GoForward();
         }
-        if (direction == 1) // back
+        if (animalDirection == 1) // back
         {
             GoBack();
         }
-        if (direction == 2) // right
+        if (animalDirection == 2) // right
         {
             GoRight();
         }
-        if (direction == 3) // left
+        if (animalDirection == 3) // left
         {
             GoLeft();
         }
 
-        Vector3 destination = cubePosList[currentX, currentY] + (Vector3.up / 2);        
-        Vector3 midPoint = (transform.position + destination) / 2 + new Vector3(0, 0.5f, 0);
-        Vector3[] pathWaypoints = new[] {midPoint,
-                                        transform.position + new Vector3(0, 0.5f, 0),
-                                        midPoint - new Vector3(0.5f, 0, 0),
-                                        destination,
-                                        midPoint + new Vector3(0.5f, 0, 0),
-                                        destination + new Vector3(0, 0.5f, 0)};
+        MapGenerator.cubeDataList[currentX, currentY].standingAnimal = this;
 
-        transform.DOPath(pathWaypoints, 0.3f, PathType.CubicBezier).SetEase(Ease.OutSine);
+        Vector3 destination = MapGenerator.cubeDataList[currentX, currentY].pos + (Vector3.up / 2);        
+        Vector3 midPoint = (transform.position + destination) / 2 + new Vector3(0, 0.5f, 0);
+        Vector3[] pathWaypoints = new[] {midPoint, destination};
+
+        transform.DOPath(pathWaypoints, 0.3f).SetEase(Ease.OutSine);
         StartCoroutine(Walk());
     }
 
@@ -123,39 +142,114 @@ public class Animal : MonoBehaviour
     {
         transform.DORotate(new Vector3(0, -90f, 0), 0.2f);
     }
-    private int GetDirection()
+    private void GetNewRandomDirection()
     {
-        int direction = Random.Range(0, 4);
+        animalDirection = Random.Range(0, 4);
+    }
 
-        if (direction == 0) // front
+    private void CheckDirectionValidation()
+    {
+        if (animalDirection == 0 && IsCubeValid(currentX, currentY + 1)) // front
         {
-            if (currentY == cubePosList.GetLength(1) - 1)
+            return;
+        }
+        if (animalDirection == 1 && IsCubeValid(currentX, currentY - 1)) // back
+        {
+            return;
+        }
+        if (animalDirection == 2 && IsCubeValid(currentX + 1, currentY)) // right
+        {
+            return;
+        }
+        if (animalDirection == 3 && IsCubeValid(currentX - 1, currentY)) // left
+        {
+            return;
+        }
+
+        GetNewRandomDirection();
+        CheckDirectionValidation();
+    }
+
+    private bool IsCubeValid(int x, int y)
+    {
+       
+        if (animalDirection == 0) // front
+        {
+            if (currentY == columnCount - 2)
             {
-                direction = 1;
+                return false;
             }
         }
-        if (direction == 1) // back
+        if (animalDirection == 1) // back
         {
             if (currentY == 0)
             {
-               direction = 0;
+               return false;
             }
         }
-        if (direction == 2) // right
+        if (animalDirection == 2) // right
         {
-            if (currentX == cubePosList.GetLength(0) - 1)
+            if (currentX == rowCount - 2)
             {
-                direction = 3;
+                return false;
             }
         }
-        if (direction == 3) // left
+        if (animalDirection == 3) // left
         {
             if (currentX == 0)
             {
-                direction = 2;
+                return false;
             }
         }
 
-        return direction;
+        CubeData cubeData = MapGenerator.cubeDataList[x, y];
+        if (cubeData.standingAnimal != null)
+        {
+            return false;
+        }
+
+         if (cubeData.cubeType == CubeType.water || cubeData.cubeFeature != CubeFeature.none)
+        {
+            return false;
+        }
+
+        return true;
     }
+
+    private void GetValidPositionToSpawn()
+    {
+        int stackOverflowGuard = 0;
+        
+        while(true)
+        {
+            currentX = Random.Range(0, rowCount - 2);
+            currentY = Random.Range(0, columnCount - 2);
+
+            CubeData cubeData = MapGenerator.cubeDataList[currentX, currentY];
+            if (cubeData.cubeType != CubeType.water && cubeData.cubeFeature == CubeFeature.none && cubeData.standingAnimal == null)
+            {
+                break;
+            }
+
+            stackOverflowGuard++;
+
+            if (stackOverflowGuard > 10000)
+            {
+                Destroy(gameObject);
+            }
+        }
+    }
+}
+
+
+public enum AnimalState
+{
+    RandomWalk,
+    RunAway,
+    Chase,
+    GoToFood,
+    EatFood,
+    LookForFood,
+    LookForMate,
+    Mate
 }
