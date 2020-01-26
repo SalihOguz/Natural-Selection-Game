@@ -122,6 +122,7 @@ public class MapGenerator : MonoBehaviour
                 }
             }
         }
+        tile.ApplyTile();
     }
 
     private void GenerateCube(MapTile tile, int i, int j)

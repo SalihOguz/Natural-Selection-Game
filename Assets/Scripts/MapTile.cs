@@ -5,6 +5,10 @@ public class MapTile : MonoBehaviour
 {
     private Mesh mesh;
 
+    private Vector3[] vertices = new Vector3[0];
+    private int[] triangles = new int[0];
+    private Vector2[] uv = new Vector2[0];
+
     private void Awake()
     {
         // add mesh
@@ -17,15 +21,15 @@ public class MapTile : MonoBehaviour
         #region Add Vertices
 
         // init vertex list
-        int vertexCount = mesh.vertices.Length + GetVertexCount(cubeData);
-        Vector3[] vertices = new Vector3[vertexCount];
-        for (int i = 0; i < mesh.vertices.Length; i++)
+        int vertexCount = vertices.Length + GetVertexCount(cubeData);
+        Vector3[] newVertices = new Vector3[vertexCount];
+        for (int i = 0; i < vertices.Length; i++)
         {
-            vertices[i] = mesh.vertices[i];
+            newVertices[i] = vertices[i];
         }
 
         float side = cubeData.size / 2f;
-        int currentVertexIndex = mesh.vertices.Length;
+        int currentVertexIndex = vertices.Length;
         int leftStartIndex = 0, rightStartIndex = 0, frontStartIndex = 0, backStartIndex = 0, topStartIndex = 0, bottomStartIndex = 0;
 
         // research done
@@ -33,143 +37,143 @@ public class MapTile : MonoBehaviour
         if (cubeData.leftSide)
         {
             leftStartIndex = currentVertexIndex;
-            vertices[currentVertexIndex] = startPos + new Vector3(-side, side, side);
-            vertices[currentVertexIndex + 1] = startPos + new Vector3(-side, -side, side);
-            vertices[currentVertexIndex + 2] = startPos + new Vector3(-side, side, -side);
-            vertices[currentVertexIndex + 3] = startPos + new Vector3(-side, -side, -side);
+            newVertices[currentVertexIndex] = startPos + new Vector3(-side, side, side);
+            newVertices[currentVertexIndex + 1] = startPos + new Vector3(-side, -side, side);
+            newVertices[currentVertexIndex + 2] = startPos + new Vector3(-side, side, -side);
+            newVertices[currentVertexIndex + 3] = startPos + new Vector3(-side, -side, -side);
             currentVertexIndex += 4;
         }
 
         if (cubeData.frontSide)
         {
             frontStartIndex = currentVertexIndex;
-            vertices[currentVertexIndex] = startPos + new Vector3(-side, side, side);
-            vertices[currentVertexIndex + 1] = startPos + new Vector3(side, side, side);
-            vertices[currentVertexIndex + 2] = startPos + new Vector3(-side, -side, side);
-            vertices[currentVertexIndex + 3] = startPos + new Vector3(side, -side, side);
+            newVertices[currentVertexIndex] = startPos + new Vector3(-side, side, side);
+            newVertices[currentVertexIndex + 1] = startPos + new Vector3(side, side, side);
+            newVertices[currentVertexIndex + 2] = startPos + new Vector3(-side, -side, side);
+            newVertices[currentVertexIndex + 3] = startPos + new Vector3(side, -side, side);
             currentVertexIndex += 4;
         }
 
         if (cubeData.backSide)
         {
             backStartIndex = currentVertexIndex;
-            vertices[currentVertexIndex] = startPos + new Vector3(-side, -side, -side);
-            vertices[currentVertexIndex + 1] = startPos + new Vector3(side, -side, -side);
-            vertices[currentVertexIndex + 2] = startPos + new Vector3(-side, side, -side);
-            vertices[currentVertexIndex + 3] = startPos + new Vector3(side, side, -side);
+            newVertices[currentVertexIndex] = startPos + new Vector3(-side, -side, -side);
+            newVertices[currentVertexIndex + 1] = startPos + new Vector3(side, -side, -side);
+            newVertices[currentVertexIndex + 2] = startPos + new Vector3(-side, side, -side);
+            newVertices[currentVertexIndex + 3] = startPos + new Vector3(side, side, -side);
             currentVertexIndex += 4;
         }
 
         if (cubeData.rightSide)
         {
             rightStartIndex = currentVertexIndex;
-            vertices[currentVertexIndex] = startPos + new Vector3(side, -side, side);
-            vertices[currentVertexIndex + 1] = startPos + new Vector3(side, side, side);
-            vertices[currentVertexIndex + 2] = startPos + new Vector3(side, -side, -side);
-            vertices[currentVertexIndex + 3] = startPos + new Vector3(side, side, -side);
+            newVertices[currentVertexIndex] = startPos + new Vector3(side, -side, side);
+            newVertices[currentVertexIndex + 1] = startPos + new Vector3(side, side, side);
+            newVertices[currentVertexIndex + 2] = startPos + new Vector3(side, -side, -side);
+            newVertices[currentVertexIndex + 3] = startPos + new Vector3(side, side, -side);
             currentVertexIndex += 4;
         }
 
         if (cubeData.topSide)
         {
             topStartIndex = currentVertexIndex;
-            vertices[currentVertexIndex] = startPos + new Vector3(side, side, side);
-            vertices[currentVertexIndex + 1] = startPos + new Vector3(-side, side, side);
-            vertices[currentVertexIndex + 2] = startPos + new Vector3(side, side, -side);
-            vertices[currentVertexIndex + 3] = startPos + new Vector3(-side, side, -side);
+            newVertices[currentVertexIndex] = startPos + new Vector3(side, side, side);
+            newVertices[currentVertexIndex + 1] = startPos + new Vector3(-side, side, side);
+            newVertices[currentVertexIndex + 2] = startPos + new Vector3(side, side, -side);
+            newVertices[currentVertexIndex + 3] = startPos + new Vector3(-side, side, -side);
             currentVertexIndex += 4;
         }
 
         if (cubeData.bottomSide)
         {
             bottomStartIndex = currentVertexIndex;
-            vertices[currentVertexIndex] = startPos + new Vector3(-side, -side, side);
-            vertices[currentVertexIndex + 1] = startPos + new Vector3(side, -side, side);
-            vertices[currentVertexIndex + 2] = startPos + new Vector3(-side, -side, -side);
-            vertices[currentVertexIndex + 3] = startPos + new Vector3(side, -side, -side);
+            newVertices[currentVertexIndex] = startPos + new Vector3(-side, -side, side);
+            newVertices[currentVertexIndex + 1] = startPos + new Vector3(side, -side, side);
+            newVertices[currentVertexIndex + 2] = startPos + new Vector3(-side, -side, -side);
+            newVertices[currentVertexIndex + 3] = startPos + new Vector3(side, -side, -side);
             currentVertexIndex += 4;
         }
         #endregion
         
         #region Add Triangles
-        int triangleCount = mesh.triangles.Length + GetTriangleCount(cubeData);
-        int[] triangles = new int[triangleCount];
-        for (int i = 0; i < mesh.triangles.Length; i++)
+        int triangleCount = triangles.Length + GetTriangleCount(cubeData);
+        int[] newTriangles = new int[triangleCount];
+        for (int i = 0; i < triangles.Length; i++)
         {
-            triangles[i] = mesh.triangles[i];
+            newTriangles[i] = triangles[i];
         }
 
-        currentVertexIndex = mesh.triangles.Length;
+        currentVertexIndex = triangles.Length;
     
         if (cubeData.leftSide)
         {
-            triangles[currentVertexIndex] = leftStartIndex + 2;
-            triangles[currentVertexIndex + 1] = leftStartIndex + 1;
-            triangles[currentVertexIndex + 2] = leftStartIndex;
+            newTriangles[currentVertexIndex] = leftStartIndex + 2;
+            newTriangles[currentVertexIndex + 1] = leftStartIndex + 1;
+            newTriangles[currentVertexIndex + 2] = leftStartIndex;
 
-            triangles[currentVertexIndex + 3] = leftStartIndex + 2;
-            triangles[currentVertexIndex + 4] = leftStartIndex + 3;
-            triangles[currentVertexIndex + 5] = leftStartIndex + 1;
+            newTriangles[currentVertexIndex + 3] = leftStartIndex + 2;
+            newTriangles[currentVertexIndex + 4] = leftStartIndex + 3;
+            newTriangles[currentVertexIndex + 5] = leftStartIndex + 1;
             currentVertexIndex += 6;
         }
 
         if (cubeData.frontSide)
         {
-            triangles[currentVertexIndex] = frontStartIndex + 2;
-            triangles[currentVertexIndex + 1] = frontStartIndex + 1;
-            triangles[currentVertexIndex + 2] = frontStartIndex;
+            newTriangles[currentVertexIndex] = frontStartIndex + 2;
+            newTriangles[currentVertexIndex + 1] = frontStartIndex + 1;
+            newTriangles[currentVertexIndex + 2] = frontStartIndex;
 
-            triangles[currentVertexIndex + 3] = frontStartIndex + 2;
-            triangles[currentVertexIndex + 4] = frontStartIndex + 3;
-            triangles[currentVertexIndex + 5] = frontStartIndex + 1;
+            newTriangles[currentVertexIndex + 3] = frontStartIndex + 2;
+            newTriangles[currentVertexIndex + 4] = frontStartIndex + 3;
+            newTriangles[currentVertexIndex + 5] = frontStartIndex + 1;
             currentVertexIndex += 6;
         }
 
         if (cubeData.backSide)
         {
-            triangles[currentVertexIndex] = backStartIndex + 2;
-            triangles[currentVertexIndex + 1] = backStartIndex + 1;
-            triangles[currentVertexIndex + 2] = backStartIndex;
+            newTriangles[currentVertexIndex] = backStartIndex + 2;
+            newTriangles[currentVertexIndex + 1] = backStartIndex + 1;
+            newTriangles[currentVertexIndex + 2] = backStartIndex;
 
-            triangles[currentVertexIndex + 3] = backStartIndex + 2;
-            triangles[currentVertexIndex + 4] = backStartIndex + 3;
-            triangles[currentVertexIndex + 5] = backStartIndex + 1;
+            newTriangles[currentVertexIndex + 3] = backStartIndex + 2;
+            newTriangles[currentVertexIndex + 4] = backStartIndex + 3;
+            newTriangles[currentVertexIndex + 5] = backStartIndex + 1;
             currentVertexIndex += 6;
         }
 
         if (cubeData.rightSide)
         {
-            triangles[currentVertexIndex] = rightStartIndex + 2;
-            triangles[currentVertexIndex + 1] = rightStartIndex + 1;
-            triangles[currentVertexIndex + 2] = rightStartIndex;
+            newTriangles[currentVertexIndex] = rightStartIndex + 2;
+            newTriangles[currentVertexIndex + 1] = rightStartIndex + 1;
+            newTriangles[currentVertexIndex + 2] = rightStartIndex;
 
-            triangles[currentVertexIndex + 3] = rightStartIndex + 2;
-            triangles[currentVertexIndex + 4] = rightStartIndex + 3;
-            triangles[currentVertexIndex + 5] = rightStartIndex + 1;
+            newTriangles[currentVertexIndex + 3] = rightStartIndex + 2;
+            newTriangles[currentVertexIndex + 4] = rightStartIndex + 3;
+            newTriangles[currentVertexIndex + 5] = rightStartIndex + 1;
             currentVertexIndex += 6;
         }
 
         if (cubeData.topSide)
         {
-            triangles[currentVertexIndex] = topStartIndex + 2;
-            triangles[currentVertexIndex + 1] = topStartIndex + 1;
-            triangles[currentVertexIndex + 2] = topStartIndex;
+            newTriangles[currentVertexIndex] = topStartIndex + 2;
+            newTriangles[currentVertexIndex + 1] = topStartIndex + 1;
+            newTriangles[currentVertexIndex + 2] = topStartIndex;
 
-            triangles[currentVertexIndex + 3] = topStartIndex + 2;
-            triangles[currentVertexIndex + 4] = topStartIndex + 3;
-            triangles[currentVertexIndex + 5] = topStartIndex + 1;
+            newTriangles[currentVertexIndex + 3] = topStartIndex + 2;
+            newTriangles[currentVertexIndex + 4] = topStartIndex + 3;
+            newTriangles[currentVertexIndex + 5] = topStartIndex + 1;
             currentVertexIndex += 6;
         }
 
         if (cubeData.bottomSide)
         {
-            triangles[currentVertexIndex] = bottomStartIndex + 2;
-            triangles[currentVertexIndex + 1] = bottomStartIndex + 1;
-            triangles[currentVertexIndex + 2] = bottomStartIndex;
+            newTriangles[currentVertexIndex] = bottomStartIndex + 2;
+            newTriangles[currentVertexIndex + 1] = bottomStartIndex + 1;
+            newTriangles[currentVertexIndex + 2] = bottomStartIndex;
 
-            triangles[currentVertexIndex + 3] = bottomStartIndex + 2;
-            triangles[currentVertexIndex + 4] = bottomStartIndex + 3;
-            triangles[currentVertexIndex + 5] = bottomStartIndex + 1;
+            newTriangles[currentVertexIndex + 3] = bottomStartIndex + 2;
+            newTriangles[currentVertexIndex + 4] = bottomStartIndex + 3;
+            newTriangles[currentVertexIndex + 5] = bottomStartIndex + 1;
             currentVertexIndex += 6;
         }
         #endregion
@@ -179,72 +183,79 @@ public class MapTile : MonoBehaviour
         float startX = GetUVStartCoord(cubeData.cubeType)[0];
         float startY = GetUVStartCoord(cubeData.cubeType)[1];
 
-        Vector2[] uvs = new Vector2[vertexCount];
+        Vector2[] newUv = new Vector2[vertexCount];
         
-        for (int i = 0; i < mesh.uv.Length; i++)
+        for (int i = 0; i < uv.Length; i++)
         {
-            uvs[i] = mesh.uv[i];
+            newUv[i] = uv[i];
         }
 
-        currentVertexIndex = mesh.uv.Length;
+        currentVertexIndex = uv.Length;
         if (cubeData.leftSide)
         {
-            uvs[currentVertexIndex] = new Vector2(startX, startY);
-            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
-            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
-            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            newUv[currentVertexIndex] = new Vector2(startX, startY);
+            newUv[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            newUv[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            newUv[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
             currentVertexIndex += 4;
         }
 
         if (cubeData.frontSide)
         {
-            uvs[currentVertexIndex] = new Vector2(startX, startY);
-            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
-            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
-            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            newUv[currentVertexIndex] = new Vector2(startX, startY);
+            newUv[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            newUv[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            newUv[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
             currentVertexIndex += 4;
         }
 
         if (cubeData.backSide)
         {
-            uvs[currentVertexIndex] = new Vector2(startX, startY);
-            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
-            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
-            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            newUv[currentVertexIndex] = new Vector2(startX, startY);
+            newUv[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            newUv[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            newUv[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
             currentVertexIndex += 4;
         }
 
         if (cubeData.rightSide)
         {
-            uvs[currentVertexIndex] = new Vector2(startX, startY);
-            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
-            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
-            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            newUv[currentVertexIndex] = new Vector2(startX, startY);
+            newUv[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            newUv[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            newUv[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
             currentVertexIndex += 4;
         }
 
         if (cubeData.topSide)
         {
-            uvs[currentVertexIndex] = new Vector2(startX, startY);
-            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
-            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
-            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            newUv[currentVertexIndex] = new Vector2(startX, startY);
+            newUv[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            newUv[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            newUv[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
             currentVertexIndex += 4;
         }
 
         if (cubeData.bottomSide)
         {
-            uvs[currentVertexIndex] = new Vector2(startX, startY);
-            uvs[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
-            uvs[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
-            uvs[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
+            newUv[currentVertexIndex] = new Vector2(startX, startY);
+            newUv[currentVertexIndex + 1] = new Vector2(startX + 0.5f, startY);
+            newUv[currentVertexIndex + 2] =  new Vector2(startX, startY - 0.5f);
+            newUv[currentVertexIndex + 3] =  new Vector2(startX + 0.5f, startY - 0.5f);
             currentVertexIndex += 4;
         }
         #endregion
 
+        vertices = newVertices;
+        triangles = newTriangles;
+        uv = newUv;
+    }
+
+    public void ApplyTile()
+    {
         mesh.vertices = vertices;
         mesh.triangles = triangles;
-        mesh.uv = uvs;
+        mesh.uv = uv;
 
         mesh.Optimize();
         mesh.RecalculateNormals();
