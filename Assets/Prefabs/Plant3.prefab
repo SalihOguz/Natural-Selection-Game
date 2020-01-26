@@ -44,8 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1e02d3f2ee83ec48a27bbc59e8a2067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxFoodCount: 4
-  currentFoodCount: 4
+  MaxFoodCount: 4
+  CurrentFoodCount: 4
+  FoodRefreshTime: 10
 --- !u!1 &3540074690453419444
 GameObject:
   m_ObjectHideFlags: 0
