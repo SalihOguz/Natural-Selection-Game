@@ -42,8 +42,8 @@ public class Animal : MonoBehaviour
         _currentState = AnimalState.RandomWalk;
         _moveSpeed = 0.4f / Speed;
         _energyConsumption = Mathf.Pow(Strength, 3) * Mathf.Pow(Speed, 2) + SenseDistance;
-        CurrentEnergy = 100;
-        _energyEmergency = _energyConsumption * 10;
+        CurrentEnergy = 200;
+        _energyEmergency = _energyConsumption * 20;
 
         StartCoroutine(Delay());
     }
@@ -198,6 +198,7 @@ public class Animal : MonoBehaviour
                 {
                     _currentState = AnimalState.EatFood;
                     _animalDirection = -1;
+                    MapGenerator.cubeDataList[closest.X, closest.Y].standingPlant.EatFood(this);
                     return;
                 }
                 else
