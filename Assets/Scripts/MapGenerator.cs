@@ -70,6 +70,7 @@ public class MapGenerator : MonoBehaviour
         print(rowCount*columnCount + " cubes created as " + tileRowLength + "X" + tileColumnLength + "tiles in " + (Time.realtimeSinceStartup - startTime));
 
         AnimalManager.Instance.SpawnAnimals();
+        //Time.timeScale = 20f;
     }
 
     private void GenerateTile(int startX, int startY, MapTile tile)

@@ -23,4 +23,8 @@ public class AnimalManager : MonoBehaviour
             animal.GetComponent<Animal>().Spanw();
         }
     }
+
+    private void Update() {
+        print("Animal Count: " + _animalsParent.childCount);
+    }
 }

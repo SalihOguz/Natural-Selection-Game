@@ -61,7 +61,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 1
   Strength: 1
-  SenseDistance: 3
+  SenseDistance: 5
   Gender: 0
   DietType: 0
   Species: 0

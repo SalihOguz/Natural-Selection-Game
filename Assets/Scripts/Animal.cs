@@ -29,6 +29,8 @@ public class Animal : MonoBehaviour
     private float _energyConsumption;
     private float _energyEmergency;
 
+    private int stackOverflowGuard = 0;
+
     public void Spanw()
     {
         _rowCount = MapGenerator.Instance.rowCount;
@@ -41,9 +43,10 @@ public class Animal : MonoBehaviour
         MapGenerator.cubeDataList[_currentX, _currentY].standingAnimal = this;
         _currentState = AnimalState.RandomWalk;
         _moveSpeed = 0.4f / Speed;
-        _energyConsumption = Mathf.Pow(Strength, 3) * Mathf.Pow(Speed, 2) + SenseDistance;
-        CurrentEnergy = 200;
-        _energyEmergency = _energyConsumption * 20;
+        _energyConsumption = (Mathf.Pow(Strength, 3) * Mathf.Pow(Speed, 2) + SenseDistance) / 5;
+        print("_energyConsumption " + _energyConsumption);
+        CurrentEnergy = 80;
+        _energyEmergency = _energyConsumption * 50;
 
         StartCoroutine(Delay());
     }
@@ -75,8 +78,7 @@ public class Animal : MonoBehaviour
         
         GoToDirection();
 
-        
-
+        stackOverflowGuard = 0;
         StartCoroutine(Walk());
     }
 
@@ -217,7 +219,15 @@ public class Animal : MonoBehaviour
 
     private void GetRandomDirection()
     {
-        _animalDirection = Random.Range(0, 4);
+        stackOverflowGuard++;
+        if (stackOverflowGuard > 50)
+        {
+            _animalDirection = -1;
+        }
+        else
+        {
+            _animalDirection = Random.Range(0, 4);
+        }
     }
 
     private void GetForwardHeavyRandomDirection()
@@ -258,6 +268,12 @@ public class Animal : MonoBehaviour
 
     private void CheckDirectionValidation()
     {
+        stackOverflowGuard++;
+        if (stackOverflowGuard > 50)
+        {
+            return;
+        }
+
         if (_animalDirection == 0 && IsCubeValid(_currentX, _currentY + 1)) // front
         {
             return;
