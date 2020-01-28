@@ -17,6 +17,9 @@ public class Animal : MonoBehaviour
     public float CurrentEnergy;
 
     private AnimalState _currentState;
+    public AnimalState CurrentState{
+        get=> _currentState;
+    }
 
     private int _currentX;
     private int _currentY;
@@ -28,6 +31,8 @@ public class Animal : MonoBehaviour
     private float _moveSpeed;
     private float _energyConsumption;
     private float _energyEmergency;
+
+    private float _matingEnergy = 50;
 
     private int stackOverflowGuard = 0;
 
@@ -45,8 +50,9 @@ public class Animal : MonoBehaviour
         _moveSpeed = 0.4f / Speed;
         _energyConsumption = (Mathf.Pow(Strength, 3) * Mathf.Pow(Speed, 2) + SenseDistance) / 5;
         print("_energyConsumption " + _energyConsumption);
-        CurrentEnergy = 80;
-        _energyEmergency = _energyConsumption * 50;
+        CurrentEnergy = 100;
+        _energyEmergency = _energyConsumption * 60;
+        Gender = (Gender)Random.Range(0,2);
 
         StartCoroutine(Delay());
     }
@@ -63,11 +69,6 @@ public class Animal : MonoBehaviour
         CurrentEnergy -= _energyConsumption;
         CheckDeath();
 
-        // get direction
-        // if (Random.Range(0f, 100f) <= 35f)
-        // {
-        //     GetRandomDirection();
-        // }
         GetNewDirection();
 
         yield return new WaitForSeconds(_moveSpeed / 2);
@@ -81,6 +82,8 @@ public class Animal : MonoBehaviour
         stackOverflowGuard = 0;
         StartCoroutine(Walk());
     }
+
+    #region Helper Functions
 
     private void CheckDeath()
     {
@@ -145,7 +148,7 @@ public class Animal : MonoBehaviour
         transform.DOPath(pathWaypoints, 0.3f).SetEase(Ease.OutSine);
     }
 
-    #region Helper Functions
+    
     private void GoForward()
     {
         _currentY++;     
@@ -192,9 +195,9 @@ public class Animal : MonoBehaviour
     {
             EnvironmentScan scan = CheckNeightbors();
 
-            if (scan.foodList.Count > 0  && CurrentEnergy <= _energyEmergency)
+            if (scan.foodList.Count > 0  && CurrentEnergy <= _energyEmergency && _currentState != AnimalState.Mating)
             {
-                Pos closest = GetClosestPlant(scan.foodList);
+                Pos closest = GetClosest(scan.foodList);
 
                 if (GetDistance(closest) <= 1.1f)
                 {
@@ -206,6 +209,29 @@ public class Animal : MonoBehaviour
                 else
                 {
                     _currentState = AnimalState.GoToFood;
+                    GetDirectionToPos(closest);
+                }
+            }
+            else if (scan.mateList.Count > 0)
+            {
+                Pos closest = GetClosest(scan.mateList);
+
+                if (GetDistance(closest) <= 1.1f)
+                {
+                    _currentState = AnimalState.Mating;
+                    _animalDirection = -1;
+                    MapGenerator.cubeDataList[closest.X, closest.Y].standingAnimal.Mate(this);
+                    CurrentEnergy -= _matingEnergy;
+
+                    if (CurrentEnergy <= 0)
+                    {
+                        print("DIED DURING MATING");
+                    }
+                    return;
+                }
+                else
+                {
+                    _currentState = AnimalState.LookForMate;
                     GetDirectionToPos(closest);
                 }
             }
@@ -391,7 +417,8 @@ public class Animal : MonoBehaviour
                     {
                         scan.predetorList.Add(new Pos(x, y));
                     }
-                    else if (!IsPregnant && standingAnimal.Species == Species && standingAnimal.Gender != Gender && !standingAnimal.IsPregnant)
+                    else if (!IsPregnant && standingAnimal.Species == Species && standingAnimal.Gender != Gender 
+                                && !standingAnimal.IsPregnant && standingAnimal.CurrentState != AnimalState.Mating && standingAnimal.CurrentEnergy > _matingEnergy)
                     {
                         scan.mateList.Add(new Pos(x, y));
                     }
@@ -406,7 +433,7 @@ public class Animal : MonoBehaviour
         return scan;
     }
 
-    private Pos GetClosestPlant(List<Pos> posList)
+    private Pos GetClosest(List<Pos> posList)
     {
         Pos minPos = posList[0];
         float minLength = SenseDistance * 2;
@@ -424,6 +451,38 @@ public class Animal : MonoBehaviour
     private float GetDistance(Pos pos)
     {
         return Mathf.Sqrt(Mathf.Pow(_currentX - pos.X, 2) + Mathf.Pow(_currentY - pos.Y, 2));
+    }
+
+    public void Mate(Animal animal)
+    {
+        if (Gender == Gender.Female)
+        {
+            IsPregnant = true;
+            _animalDirection = -1;
+            StartCoroutine(GiveBirth());
+        }
+    }
+
+    IEnumerator GiveBirth()
+    {
+        yield return new WaitForSeconds(10f);
+        if (CurrentEnergy >= 0)
+        {
+            AnimalManager.Instance.GiveBirthNewAnimal();
+            IsPregnant = false;
+            CurrentEnergy -= 50;
+
+            if (CurrentEnergy <= 0)
+            {
+                print("DIED DURING BIRTH");
+            }
+        }
+        else
+        {
+            print("DIED BEFORE BIRTH");
+            Die();
+        }
+
     }
 }
 
@@ -454,7 +513,7 @@ public enum AnimalState
     EatFood,
     LookForFood,
     LookForMate,
-    Mate
+    Mating
 }
 
 public enum DietType
