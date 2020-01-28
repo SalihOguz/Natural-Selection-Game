@@ -8,9 +8,15 @@ public class Animal : MonoBehaviour
     public float Speed = 1;
     public int Strength = 1;
     public int SenseDistance = 5;
+
+    public ParticleSystem MatingParticle;
+    public ParticleSystem BirthParticle;
+
+    [HideInInspector]
     public Gender Gender;
     public DietType DietType;
     public Species Species;
+    [HideInInspector]
     public bool IsPregnant = false;
     
     [HideInInspector]
@@ -36,12 +42,14 @@ public class Animal : MonoBehaviour
 
     private int stackOverflowGuard = 0;
 
-    public void Spanw()
+    public void Spanw(Pos pos)
     {
         _rowCount = MapGenerator.Instance.rowCount;
         _columnCount = MapGenerator.Instance.columnCount;
 
-        GetValidPositionToSpawn();
+        _currentX = pos.X;
+        _currentY = pos.Y;
+
         transform.position = MapGenerator.cubeDataList[_currentX, _currentY].pos + (Vector3.up / 2);
         gameObject.SetActive(true);
 
@@ -367,29 +375,6 @@ public class Animal : MonoBehaviour
         return true;
     }
 
-    private void GetValidPositionToSpawn()
-    {
-        int stackOverflowGuard = 0;
-        
-        while(true)
-        {
-            _currentX = Random.Range(0, _rowCount - 2);
-            _currentY = Random.Range(0, _columnCount - 2);
-
-            CubeData cubeData = MapGenerator.cubeDataList[_currentX, _currentY];
-            if (cubeData.cubeType != CubeType.water && cubeData.cubeFeature == CubeFeature.none && cubeData.standingAnimal == null)
-            {
-                break;
-            }
-
-            stackOverflowGuard++;
-
-            if (stackOverflowGuard > 10000)
-            {
-                Destroy(gameObject);
-            }
-        }
-    }
 
     private EnvironmentScan CheckNeightbors()
     {
@@ -455,6 +440,7 @@ public class Animal : MonoBehaviour
 
     public void Mate(Animal animal)
     {
+        MatingParticle.Play();
         if (Gender == Gender.Female)
         {
             IsPregnant = true;
@@ -468,21 +454,11 @@ public class Animal : MonoBehaviour
         yield return new WaitForSeconds(10f);
         if (CurrentEnergy >= 0)
         {
-            AnimalManager.Instance.GiveBirthNewAnimal();
+            BirthParticle.Play();
+            AnimalManager.Instance.GiveBirthNewAnimal(new Pos(_currentX, _currentY), Species);
             IsPregnant = false;
             CurrentEnergy -= 50;
-
-            if (CurrentEnergy <= 0)
-            {
-                print("DIED DURING BIRTH");
-            }
         }
-        else
-        {
-            print("DIED BEFORE BIRTH");
-            Die();
-        }
-
     }
 }
 
@@ -530,5 +506,6 @@ public enum Gender
 
 public enum Species
 {
-    Chicken
+    Chicken,
+    PredatorChicken
 }

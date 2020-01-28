@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4421854725932508}
   - component: {fileID: 114701888605048992}
   m_Layer: 0
-  m_Name: Animal
+  m_Name: PredatorChicken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,7 +64,7 @@ MonoBehaviour:
   SenseDistance: 5
   Gender: 0
   DietType: 0
-  Species: 0
+  Species: 1
   IsPregnant: 0
   CurrentEnergy: 0
 --- !u!1 &417228896425270288
@@ -514,7 +514,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d0f039fb5db45a14db52e957dd09cd6a, type: 2}
+  - {fileID: 2100000, guid: 2acf234db841b9148972a953ec802326, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -826,7 +826,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d0f039fb5db45a14db52e957dd09cd6a, type: 2}
+  - {fileID: 2100000, guid: 2acf234db841b9148972a953ec802326, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1138,7 +1138,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d0f039fb5db45a14db52e957dd09cd6a, type: 2}
+  - {fileID: 2100000, guid: 2acf234db841b9148972a953ec802326, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1294,7 +1294,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d0f039fb5db45a14db52e957dd09cd6a, type: 2}
+  - {fileID: 2100000, guid: 2acf234db841b9148972a953ec802326, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
