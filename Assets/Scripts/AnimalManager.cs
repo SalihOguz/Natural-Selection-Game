@@ -78,7 +78,7 @@ public class AnimalManager : MonoBehaviour
             CubeData cubeData = MapGenerator.cubeDataList[pos.X, pos.Y];
             if (cubeData.cubeType != CubeType.water && cubeData.cubeFeature == CubeFeature.none && cubeData.standingAnimal == null)
             {
-                break;
+                return pos;
             }
 
             stackOverflowGuard++;

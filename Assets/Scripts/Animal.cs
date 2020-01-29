@@ -203,7 +203,15 @@ public class Animal : MonoBehaviour
     {
             EnvironmentScan scan = CheckNeightbors();
 
-            if (scan.foodList.Count > 0  && CurrentEnergy <= _energyEmergency && _currentState != AnimalState.Mating)
+            if (scan.predetorList.Count > 0)
+            {
+                Pos closest = GetClosest(scan.predetorList);
+
+                _currentState = AnimalState.RunAway;
+                GetDirectionToPos(closest);
+                ReverseDirection();
+            }
+            else if (scan.foodList.Count > 0  && CurrentEnergy <= _energyEmergency && _currentState != AnimalState.Mating)
             {
                 Pos closest = GetClosest(scan.foodList);
 
@@ -211,7 +219,14 @@ public class Animal : MonoBehaviour
                 {
                     _currentState = AnimalState.EatFood;
                     _animalDirection = -1;
-                    MapGenerator.cubeDataList[closest.X, closest.Y].standingPlant.EatFood(this);
+                    if (DietType == DietType.Herbivore)
+                    {
+                        MapGenerator.cubeDataList[closest.X, closest.Y].standingPlant.EatFood(this);
+                    }
+                    else
+                    {
+                        MapGenerator.cubeDataList[closest.X, closest.Y].standingAnimal.GetEatenBy(this);
+                    }
                     return;
                 }
                 else
@@ -298,6 +313,25 @@ public class Animal : MonoBehaviour
         }
 
         CheckDirectionValidation();
+    }
+    private void ReverseDirection()
+    {
+        if (_animalDirection == 0)
+        {
+            _animalDirection = 1;
+        }
+        else if (_animalDirection == 1)
+        {
+            _animalDirection = 0;
+        }
+        else if (_animalDirection == 2)
+        {
+            _animalDirection = 3;
+        }
+        else if (_animalDirection == 3)
+        {
+            _animalDirection = 2;
+        }
     }
 
     private void CheckDirectionValidation()
@@ -407,11 +441,16 @@ public class Animal : MonoBehaviour
                     {
                         scan.mateList.Add(new Pos(x, y));
                     }
+                    else if (DietType == DietType.Carnivore && standingAnimal.Strength < Strength)
+                    {
+                        scan.foodList.Add(new Pos(x, y));
+                    }
                 }
-                else if (cubeData.standingPlant != null && cubeData.standingPlant.CurrentFoodCount > 0)
+                else if (DietType == DietType.Herbivore && cubeData.standingPlant != null && cubeData.standingPlant.CurrentFoodCount > 0)
                 {
                     scan.foodList.Add(new Pos(x, y));
                 }
+                
             }
         }
 
@@ -459,6 +498,12 @@ public class Animal : MonoBehaviour
             IsPregnant = false;
             CurrentEnergy -= 50;
         }
+    }
+
+    public void GetEatenBy(Animal animal)
+    {
+        animal.CurrentEnergy += 30;
+        Die();
     }
 }
 
