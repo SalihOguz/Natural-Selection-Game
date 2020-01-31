@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,7 +15,6 @@ public class MenuManager : MonoBehaviour
     public GameObject InGameScreen;
     public GameObject SetupScreen;
 
-
     public InputField AnimalName;
     public InputField UserSpeedInput;
     public InputField  UserStrengthInput;
@@ -28,6 +28,11 @@ public class MenuManager : MonoBehaviour
     public Toggle EnemyPlantToggle;
     public Text EnemyEnergyCost;
 
+    public HexMapCamera hexCamera;
+    public GameObject WinScreen;
+    public GameObject GameOverScreen;
+
+    bool isStarted = false;
 
     private void Start() {
         
@@ -66,7 +71,10 @@ public class MenuManager : MonoBehaviour
         AnimalManager.Instance.AnimalPrefabList[1].GetComponent<Animal>().SenseDistance = int.Parse(EnemySenseInput.text);
         AnimalManager.Instance.AnimalPrefabList[1].GetComponent<Animal>().DietType = GetEnemyDietType();
 
+        hexCamera.enabled = true;
+
         AnimalManager.Instance.SpawnAnimals();
+        isStarted = true;
     }
 
     private DietType GetUserDietType()
@@ -101,17 +109,43 @@ public class MenuManager : MonoBehaviour
         float perc = (float)counts[0] / ((float)counts[0] + (float)counts[1]);
         PopulationBar.fillAmount = perc;
         Percentage.text = perc.ToString("P0");
+
+        if (isStarted)
+        {
+            if (perc > 0.85f)
+            {
+                WinScreen.SetActive(true);
+            }
+            else if (counts[0] == 0)
+            {
+                GameOverScreen.SetActive(true);
+            }
+        }
     }
 
     public void UserDataChanged()
     {
-        float energy = (Mathf.Pow(float.Parse(UserStrengthInput.text), 2) * Mathf.Pow(float.Parse(UserSpeedInput.text), 2) + int.Parse(UserSenseInput.text)) / 5;
-        UserEnergyCost.text = "Movement Energy Cost: " + energy;
+        try
+        {
+            float energy = (Mathf.Pow(float.Parse(UserStrengthInput.text), 2) * Mathf.Pow(float.Parse(UserSpeedInput.text), 2) + int.Parse(UserSenseInput.text)) / 5;
+            UserEnergyCost.text = "Movement Energy Cost: " + Math.Round(energy, 2);
+        }
+        catch
+        {
+
+        }
     }
 
     public void EnemyDataChanged()
     {
-        float energy = (Mathf.Pow(float.Parse(EnemyStrengthInput.text), 2) * Mathf.Pow(float.Parse(EnemySpeedInput.text), 2) + int.Parse(EnemySenseInput.text)) / 5;
-        EnemyEnergyCost.text = "Movement Energy Cost: " + energy;
+        try
+        {
+            float energy = (Mathf.Pow(float.Parse(EnemyStrengthInput.text), 2) * Mathf.Pow(float.Parse(EnemySpeedInput.text), 2) + int.Parse(EnemySenseInput.text)) / 5;
+            EnemyEnergyCost.text = "Movement Energy Cost: " + Math.Round(energy, 2);
+        }
+        catch
+        {
+
+        }
     }
 }
