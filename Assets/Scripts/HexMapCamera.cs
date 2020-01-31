@@ -15,7 +15,7 @@ public class HexMapCamera : MonoBehaviour {
 	Transform swivel, stick;
 
 
-	float zoom = 1f;
+	float zoom = 0f;
 
 	float rotationAngle;
 
@@ -70,7 +70,7 @@ public class HexMapCamera : MonoBehaviour {
 	}
 
 	void AdjustRotation (float delta) {
-		rotationAngle += delta * rotationSpeed * Time.deltaTime;
+		rotationAngle += delta * rotationSpeed * 0.01f; //Time.deltaTime;
 		if (rotationAngle < 0f) {
 			rotationAngle += 360f;
 		}
@@ -87,7 +87,7 @@ public class HexMapCamera : MonoBehaviour {
 		float damping = Mathf.Max(Mathf.Abs(xDelta), Mathf.Abs(zDelta));
 		float distance =
 			Mathf.Lerp(moveSpeedMinZoom, moveSpeedMaxZoom, zoom) *
-			damping * Time.deltaTime;
+			damping * 0.01f;//Time.deltaTime;
 
 		Vector3 position = transform.localPosition;
 		position += direction * distance;

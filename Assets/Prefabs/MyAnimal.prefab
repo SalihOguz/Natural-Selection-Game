@@ -66,9 +66,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6201bf296b25c4e99f74ce0cad634d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 3
-  Strength: 2
-  SenseDistance: 2
+  Speed: 1.5
+  Strength: 1.1
+  SenseDistance: 6
   MatingParticle: {fileID: 9152911525161653736}
   BirthParticle: {fileID: 5670317432658495214}
   Gender: 0

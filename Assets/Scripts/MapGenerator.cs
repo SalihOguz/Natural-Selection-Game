@@ -49,6 +49,7 @@ public class MapGenerator : MonoBehaviour
     private void Start() 
     {
         InitTileList();
+        GenerateMap();
     }
 
     public void GenerateMap()
@@ -69,7 +70,7 @@ public class MapGenerator : MonoBehaviour
 
         print(rowCount*columnCount + " cubes created as " + tileRowLength + "X" + tileColumnLength + "tiles in " + (Time.realtimeSinceStartup - startTime));
 
-        AnimalManager.Instance.SpawnAnimals();
+        //AnimalManager.Instance.SpawnAnimals();
         //Time.timeScale = 20f;
     }
 

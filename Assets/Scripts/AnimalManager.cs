@@ -62,7 +62,27 @@ public class AnimalManager : MonoBehaviour
     }
 
     private void Update() {
-        print("Animal Count: " + _animalsParent.childCount);
+        //print("Animal Count: " + _animalsParent.childCount);
+    }
+
+    public int[] GetAnimalCounts()
+    {
+        int myAnimalCount = 0;
+        int chickCount = 0;
+
+        foreach (Transform item in _animalsParent)
+        {
+            if (item.GetComponent<Animal>().Species == Species.Chicken)
+            {
+                chickCount++;
+            }
+            else
+            {
+                myAnimalCount++;
+            }
+        }
+
+        return new int[]{myAnimalCount, chickCount};
     }
 
     private Pos GetRandomValidPositionToSpawn()

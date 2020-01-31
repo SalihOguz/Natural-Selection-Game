@@ -6,7 +6,7 @@ using DG.Tweening;
 public class Animal : MonoBehaviour
 {
     public float Speed = 1;
-    public int Strength = 1;
+    public float Strength = 1;
     public int SenseDistance = 5;
 
     public ParticleSystem MatingParticle;
@@ -56,9 +56,9 @@ public class Animal : MonoBehaviour
         MapGenerator.cubeDataList[_currentX, _currentY].standingAnimal = this;
         _currentState = AnimalState.RandomWalk;
         _moveSpeed = 0.4f / Speed;
-        _energyConsumption = (Mathf.Pow(Strength, 3) * Mathf.Pow(Speed, 2) + SenseDistance) / 5;
+        _energyConsumption = (Mathf.Pow(Strength, 2) * Mathf.Pow(Speed, 2) + SenseDistance) / 5;
         print("_energyConsumption " + _energyConsumption);
-        CurrentEnergy = 100;
+        CurrentEnergy = 120;
         _energyEmergency = _energyConsumption * 60;
         Gender = (Gender)Random.Range(0,2);
 
@@ -502,7 +502,7 @@ public class Animal : MonoBehaviour
 
     public void GetEatenBy(Animal animal)
     {
-        animal.CurrentEnergy += 30;
+        animal.CurrentEnergy += 50;
         Die();
     }
 }
@@ -552,5 +552,5 @@ public enum Gender
 public enum Species
 {
     Chicken,
-    PredatorChicken
+    MyAnimal
 }
