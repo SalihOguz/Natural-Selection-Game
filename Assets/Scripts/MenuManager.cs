@@ -33,6 +33,8 @@ public class MenuManager : MonoBehaviour
     public GameObject GameOverScreen;
 
     bool isStarted = false;
+    float refreshTime = 1f;
+    float currentRefreshProgress = 1f;
 
     private void Start() {
         
@@ -61,13 +63,13 @@ public class MenuManager : MonoBehaviour
         SetupScreen.SetActive(false);
 
         MyAnimalName.text = AnimalName.text;
-        AnimalManager.Instance.AnimalPrefabList[0].GetComponent<Animal>().Speed = float.Parse(UserSpeedInput.text);
-        AnimalManager.Instance.AnimalPrefabList[0].GetComponent<Animal>().Strength = float.Parse(UserStrengthInput.text);
+        AnimalManager.Instance.AnimalPrefabList[0].GetComponent<Animal>().Speed = int.Parse(UserSpeedInput.text);
+        AnimalManager.Instance.AnimalPrefabList[0].GetComponent<Animal>().Strength = int.Parse(UserStrengthInput.text);
         AnimalManager.Instance.AnimalPrefabList[0].GetComponent<Animal>().SenseDistance = int.Parse(UserSenseInput.text);
         AnimalManager.Instance.AnimalPrefabList[0].GetComponent<Animal>().DietType = GetUserDietType();
 
-        AnimalManager.Instance.AnimalPrefabList[1].GetComponent<Animal>().Speed = float.Parse(EnemySpeedInput.text);
-        AnimalManager.Instance.AnimalPrefabList[1].GetComponent<Animal>().Strength = float.Parse(EnemyStrengthInput.text);
+        AnimalManager.Instance.AnimalPrefabList[1].GetComponent<Animal>().Speed = int.Parse(EnemySpeedInput.text);
+        AnimalManager.Instance.AnimalPrefabList[1].GetComponent<Animal>().Strength = int.Parse(EnemyStrengthInput.text);
         AnimalManager.Instance.AnimalPrefabList[1].GetComponent<Animal>().SenseDistance = int.Parse(EnemySenseInput.text);
         AnimalManager.Instance.AnimalPrefabList[1].GetComponent<Animal>().DietType = GetEnemyDietType();
 
@@ -102,23 +104,30 @@ public class MenuManager : MonoBehaviour
     }
 
     private void Update() {
-        int[] counts = AnimalManager.Instance.GetAnimalCounts();
-        MyAnimalCount.text = counts[0].ToString();
-        ChickenAnimalCount.text = counts[1].ToString();
+        currentRefreshProgress += Time.deltaTime;
 
-        float perc = (float)counts[0] / ((float)counts[0] + (float)counts[1]);
-        PopulationBar.fillAmount = perc;
-        Percentage.text = perc.ToString("P0");
-
-        if (isStarted)
+        if (currentRefreshProgress >= refreshTime)
         {
-            if (perc > 0.85f)
+            currentRefreshProgress = 0;
+
+            int[] counts = AnimalManager.Instance.GetAnimalCounts();
+            MyAnimalCount.text = counts[0].ToString();
+            ChickenAnimalCount.text = counts[1].ToString();
+
+            float perc = (float)counts[0] / ((float)counts[0] + (float)counts[1]);
+            PopulationBar.fillAmount = perc;
+            Percentage.text = perc.ToString("P0");
+
+            if (isStarted)
             {
-                WinScreen.SetActive(true);
-            }
-            else if (counts[0] == 0)
-            {
-                GameOverScreen.SetActive(true);
+                if (perc > 0.85f)
+                {
+                    WinScreen.SetActive(true);
+                }
+                else if (counts[0] == 0)
+                {
+                    GameOverScreen.SetActive(true);
+                }
             }
         }
     }
