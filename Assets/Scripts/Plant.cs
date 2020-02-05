@@ -6,7 +6,7 @@ public class Plant : MonoBehaviour
 {
     public int MaxFoodCount;
     public int CurrentFoodCount;
-    public float EnergyPerFood = 25f;
+    public float EnergyPerFood = 700f;
 
     public int FoodRefreshTime = 20; // sec
 

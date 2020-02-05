@@ -38,7 +38,9 @@ public class Animal : MonoBehaviour
     private float _energyConsumption;
     private float _energyEmergency;
 
-    private float _matingEnergy = 50;
+    private float _matingEnergy = 1000;
+    private float _birthEnergy = 1000;
+    private float _eatingAnimalEnergyGain = 1200;
 
     private int stackOverflowGuard = 0;
 
@@ -55,10 +57,10 @@ public class Animal : MonoBehaviour
 
         MapGenerator.cubeDataList[_currentX, _currentY].standingAnimal = this;
         _currentState = AnimalState.RandomWalk;
-        _moveSpeed = 0.4f / Speed;
-        _energyConsumption = (Mathf.Pow(Strength, 2) * Mathf.Pow(Speed, 2) + SenseDistance) / 5;
+        _moveSpeed = 2f / Speed;
+        _energyConsumption = (Strength * Speed) + SenseDistance; //(Mathf.Pow(Strength, 2) * Mathf.Pow(Speed, 2) + SenseDistance) / 5;
         print("_energyConsumption " + _energyConsumption);
-        CurrentEnergy = 120;
+        CurrentEnergy = 3000;
         _energyEmergency = _energyConsumption * 60;
         Gender = (Gender)Random.Range(0,2);
 
@@ -70,11 +72,18 @@ public class Animal : MonoBehaviour
         yield return new WaitForSeconds(Random.Range(0, 0.4f));
         GetRandomDirection();
         StartCoroutine(Walk());
+        StartCoroutine(ConsumeEnergy());
+    }
+
+    IEnumerator ConsumeEnergy()
+    {
+        yield return new WaitForSeconds(0.5f); // TODO not sure about  0.5f
+        CurrentEnergy -= _energyConsumption;
+        StartCoroutine(ConsumeEnergy());
     }
 
     IEnumerator Walk()
     {
-        CurrentEnergy -= _energyConsumption;
         CheckDeath();
 
         GetNewDirection();
@@ -496,13 +505,13 @@ public class Animal : MonoBehaviour
             BirthParticle.Play();
             AnimalManager.Instance.GiveBirthNewAnimal(new Pos(_currentX, _currentY), Species);
             IsPregnant = false;
-            CurrentEnergy -= 50;
+            CurrentEnergy -= _birthEnergy;
         }
     }
 
     public void GetEatenBy(Animal animal)
     {
-        animal.CurrentEnergy += 50;
+        animal.CurrentEnergy += _eatingAnimalEnergyGain;
         Die();
     }
 }
